@@ -1,0 +1,2 @@
+# CurationAssistant
+Steem Curation Assistant
