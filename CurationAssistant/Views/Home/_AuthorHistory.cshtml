@@ -52,16 +52,15 @@
                 <tr>
                     <th scope="row" class="w-25">Date</th>
                     <th scope="row" class="w-25">Voted to</th>
-                    <th scope="row" class="w-25">Weight</th>
-                    <th scope="row" class="w-25">Link</th>
+                    <th scope="row" class="w-50">Weight / Link</th>                    
                 </tr>
             </thead>
             <tbody data-bind="foreach: { data: Votes, as: 'vote' }">
                 <tr>
                     <td><span data-bind="text: vote.createDate()"></span></td>
-                    <td><span data-bind="text: vote.Details.author()"></span></td>
-                    <td><span data-bind="text: vote.voteComputed()"></span></td>
+                    <td><span data-bind="text: vote.Details.author()"></span></td>                    
                     <td>
+                        <span data-bind="text: '('+vote.voteComputed()+') '"></span>
                         <a data-bind="attr: { href: vote.voteLinkComputed() }" target="_blank">
                             <span data-bind="text: vote.Details.permlink()"></span>
                         </a>
