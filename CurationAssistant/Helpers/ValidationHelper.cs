@@ -9,6 +9,9 @@ using CurationAssistant.Models.SteemModels;
 
 namespace CurationAssistant.Helpers
 {
+    /// <summary>
+    /// Helper class containing Validation methods
+    /// </summary>
     public static class ValidationHelper
     {
         public static ValidationItemViewModel ValidatePostCreateDateRule(CurationDetailsViewModel model, ValidationVariables vars)
@@ -23,6 +26,8 @@ namespace CurationAssistant.Helpers
             validationItem.OrderId = 1;
 
             var postCreatedDate = model.BlogPost.Details.created;
+
+            // Check if the post creation date is between the required ranges
             if (DateTime.Now > postCreatedDate.AddMinutes(vars.PostCreatedAtMin) &&
                 DateTime.Now < postCreatedDate.AddMinutes(vars.PostCreatedAtMax))
             {
@@ -58,6 +63,7 @@ namespace CurationAssistant.Helpers
             var postPendingPayoutString = model.BlogPost.Details.pending_payout_value.Replace("SBD", "").Trim();
             Decimal.TryParse(postPendingPayoutString, out postPendingPayoutValue);
 
+            // check if the pending payout value of the post is less than the max payout setting
             if (postPendingPayoutValue < vars.PostMaxPendingPayout)
             {
                 resultType = ValidationResultType.Success;
@@ -86,6 +92,7 @@ namespace CurationAssistant.Helpers
             validationItem.PriorityDescription = prio.ToString();
             validationItem.OrderId = 3;
                         
+            // Check if the author rep value is within the required range
             if (model.Author.ReputationCalculated > vars.AuthorRepMin &&
                 model.Author.ReputationCalculated < vars.AuthorRepMax)
             {
@@ -116,8 +123,8 @@ namespace CurationAssistant.Helpers
 
             // get posts within range
             var dateCheck = DateTime.Now.AddDays(-vars.PostsMinDays);
-            var postCount = model.Posts.Count(x => x.TimeStamp >= dateCheck);
-                        
+            var postCount = model.Posts.Count(x => x.TimeStamp >= dateCheck);                       
+            
             if (postCount > vars.PostsMin)
             {
                 resultType = ValidationResultType.Success;

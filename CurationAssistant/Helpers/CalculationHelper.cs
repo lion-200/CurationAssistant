@@ -6,6 +6,9 @@ using System.Web;
 
 namespace CurationAssistant.Helpers
 {
+    /// <summary>
+    /// Helper class containing calculation values
+    /// </summary>
     public static class CalculationHelper
     {
         public static int GetWordCount(string input)

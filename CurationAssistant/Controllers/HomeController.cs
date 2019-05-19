@@ -24,6 +24,12 @@ namespace CurationAssistant.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// This method runs all validation rules and returns a summary of the results & rules
+        /// </summary>
+        /// <param name="model">The model containing already retrieved results like Author details, Post details etc. used to run validation on.</param>
+        /// <param name="vars">The validation variables being used to run the validation on the data</param>
+        /// <returns>Returns the model containing validation results</returns>
         public ValidationSummaryViewModel RunValidation(CurationDetailsViewModel model, ValidationVariables vars)
         {
             var result = new ValidationSummaryViewModel();
@@ -50,22 +56,29 @@ namespace CurationAssistant.Controllers
             return result;
         }
 
+        /// <summary>
+        /// This method processes the input request containing the post link and calls the appropriate methods to retrieve data necessary
+        /// </summary>
+        /// <param name="model">The model containing the link of the post and validation variables possibly edited by the user</param>
+        /// <returns>Returns the data retrieved and validation summary</returns>
         [HttpPost]
-        [ValidateInput(false)]
         public ActionResult ValidatePost(HomeViewModel model)
         {
             var result = new CurationDetailsViewModel();
 
             try
             {
+                // split link into parts to get account name
                 var linkItems = model.PostLink.Split('/');
                 var accountName = linkItems.FirstOrDefault(x => x.Contains("@"));
                 var permlink = linkItems.LastOrDefault();
 
                 accountName = accountName.Replace("@", "");
+
+                // get account details
                 result.Author = GetAuthor(accountName);
 
-                // get history 
+                // get account history details
                 GetAccountHistoryDetails(accountName, result);
 
                 // get_discussion
@@ -73,6 +86,7 @@ namespace CurationAssistant.Controllers
 
                 if (result.BlogPost != null)
                 {
+                    // validate data
                     result.ValidationSummary = RunValidation(result, model.ValidationVariables);
                 }
             }
@@ -84,6 +98,11 @@ namespace CurationAssistant.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// This method gets the account details and enriches the data with some calculated values like Reputation, SteemPower etc.
+        /// </summary>
+        /// <param name="accountName">The name of the account</param>
+        /// <returns>Returns the enriched <see cref="AuthorViewModel" /> class containing data from API and calculated values</returns>
         private AuthorViewModel GetAuthor(string accountName)
         {
             var author = new AuthorViewModel();
@@ -104,6 +123,10 @@ namespace CurationAssistant.Controllers
             return author;
         }
 
+        /// <summary>
+        /// This method gets the dynamic global properties from Steem
+        /// </summary>
+        /// <returns>Returns the retrieved data mapped to <see cref="GetDynamicGlobalPropertiesModel" /> class</returns>
         private GetDynamicGlobalPropertiesModel GetDynamicGlobalProperties()
         {
             var model = new GetDynamicGlobalPropertiesModel();
@@ -131,6 +154,11 @@ namespace CurationAssistant.Controllers
             return model;
         }
 
+        /// <summary>
+        /// This method calls the getAccounts method from Steem
+        /// </summary>
+        /// <param name="accountName">The name of the account</param>
+        /// <returns>Returns the results mapped to <see cref="GetAccountsModel" /> class</returns>
         private GetAccountsModel GetAccountDetails(string accountName)
         {
             var account = new GetAccountsModel();
@@ -159,6 +187,14 @@ namespace CurationAssistant.Controllers
             return account;
         }
 
+        /// <summary>
+        /// This method makes subsequent calls to get_account_history on Steem in order to collect sufficient amount of data to run validation on
+        /// The batchSize parameter defines the limit of the transactions we want to be returned from Steem API.
+        /// The web.config setting HistoryTransactionLimit contains the max value of transactions we set in order to prevent calling the Steem API a lot of times
+        /// Based on the "op" variable in the returned transactions, the values will be mapped to corresponding classes and added to result set to return.
+        /// </summary>
+        /// <param name="accountName">The name of the account</param>
+        /// <param name="result">The result set to be enriched with transaction data</param>
         private void GetAccountHistoryDetails(string accountName, CurationDetailsViewModel result)
         {
             try
@@ -172,22 +208,24 @@ namespace CurationAssistant.Controllers
 
                 using (var csteemd = new CSteemd(ConfigurationHelper.HostName))
                 {
+                    // stop if the max amount of transactions are reached!
                     while (transactionsRetrieved < limit)
                     {
                         log.Info(string.Format("Retrieving next batch...Retrieved transaction count: {0}. Value start: {1}", transactionsRetrieved, start));
 
-                        var responseHistory = csteemd.get_account_history(accountName, start, batchSize);
-                        //log.Info(responseHistory.ToString());
+                        var responseHistory = csteemd.get_account_history(accountName, start, batchSize);                        
 
-                        // store last transaction datetime
+                        // store last transaction datetime, so that we know until what data time value we got the transactions
                         result.LastTransactionDate = responseHistory[0][1]["timestamp"].ToObject<DateTime>();
                         log.Info(string.Format("Stored last transaction datetime: {0}", result.LastTransactionDate.ToString("dd-MM-yyyy HH:mm")));
-
+                                                
                         var totalCount = responseHistory.Count();
+                        // get_account_history returns last result first, but we want most recent first, so we start from the last element of the response to loop
                         for (var i = totalCount - 1; i >= 0; i--)
                         {
                             var el = responseHistory[i];
 
+                            // get the index of the last transaction in the list to make the next call start from this index
                             if (transactionsRetrieved == 0)
                             {
                                 var firstIndex = el[0].ToString();
@@ -239,6 +277,7 @@ namespace CurationAssistant.Controllers
                                 }
                             }
 
+                            // if the required amount of counts are reached, stop
                             if (result.Comments.Count == ConfigurationHelper.CommentTransactionCount &&
                                 //result.Votes.Count == ConfigurationHelper.VoteTransactionCount &&
                                 result.Posts.Count == ConfigurationHelper.PostTransactionCount)
@@ -258,6 +297,12 @@ namespace CurationAssistant.Controllers
             }
         }
 
+        /// <summary>
+        /// This method calls the Steem API to get the post details 
+        /// </summary>
+        /// <param name="accountName">The name of the account</param>
+        /// <param name="permlink">The permLink of the post</param>
+        /// <returns>Returns the post details enriched with calculated values</returns>
         private BlogPostViewModel GetBlogPost(string accountName, string permlink)
         {
             var blogPost = new BlogPostViewModel();
@@ -287,6 +332,12 @@ namespace CurationAssistant.Controllers
             return blogPost;
         }
 
+        /// <summary>
+        /// This method gets the post details response from Steem API
+        /// </summary>
+        /// <param name="accountName">The name of the account</param>
+        /// <param name="permlink">The permlink of the post</param>
+        /// <returns>Returns the result mapped to <see cref="GetDiscussionModel" /></returns>
         private GetDiscussionModel GetDiscussion(string accountName, string permlink)
         {
             var blogPost = new GetDiscussionModel();

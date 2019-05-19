@@ -6,6 +6,9 @@ using System.Web;
 
 namespace CurationAssistant.Helpers
 {
+    /// <summary>
+    /// Helper class containing web.config values
+    /// </summary>
     public static class ConfigurationHelper
     {
         public static string HostName
