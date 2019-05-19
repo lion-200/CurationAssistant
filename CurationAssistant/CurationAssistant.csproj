@@ -129,10 +129,13 @@
     </Compile>
     <Compile Include="Helpers\CalculationHelper.cs" />
     <Compile Include="Helpers\ConfigurationHelper.cs" />
+    <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Models\ActionViewModel.cs" />
     <Compile Include="Models\AuthorViewModel.cs" />
     <Compile Include="Models\BlogPostViewModel.cs" />
     <Compile Include="Models\CurationDetailsViewModel.cs" />
+    <Compile Include="Models\Enums\ValidationPriority.cs" />
+    <Compile Include="Models\Enums\ValidationResultType.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\OperationCommentViewModel.cs" />
     <Compile Include="Models\OperationVoteViewModel.cs" />
@@ -142,6 +145,9 @@
     <Compile Include="Models\SteemModels\Partials\BaseTransactionOperationModel.cs" />
     <Compile Include="Models\SteemModels\Partials\DiscussionJsonMetadata.cs" />
     <Compile Include="Models\SteemModels\Partials\TransactionModel.cs" />
+    <Compile Include="Models\ValidationItemViewModel.cs" />
+    <Compile Include="Models\ValidationSummaryViewModel.cs" />
+    <Compile Include="Models\ValidationVariables.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -230,6 +236,8 @@
     <Content Include="Views\Home\_AuthorDetails.cshtml" />
     <Content Include="Views\Home\_AuthorHistory.cshtml" />
     <Content Include="Views\Home\_PostDetails.cshtml" />
+    <Content Include="Views\Home\_ValidationSummary.cshtml" />
+    <Content Include="Views\Home\_ValidationVariables.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

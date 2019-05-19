@@ -1,0 +1,16 @@
+﻿    
+<div class="validationContainer" data-bind="foreach: { data: ValidationSummary().Items, as: 'validationItem' }">
+    <div data-bind="attr: { 'class' : validationItem.ClassComputed(), href: '#collapseRule'+$index(), aria_controls: 'collapseRule'+$index() }" data-toggle="collapse" role="button" aria-expanded="false">
+
+        <div class="validationTitle">
+            <i class="fas fa-chevron-down valIcon"></i>
+            <span data-bind="html: validationItem.ResultDisplayComputed()"></span>
+        </div>
+        <div class="collapse" data-bind="attr: { id: 'collapseRule' + $index() }">
+            <div class="card card-body">
+                <span data-bind="html: 'Rule: ' + validationItem.Title()"></span>
+            </div>
+        </div>
+    </div>
+</div>
+

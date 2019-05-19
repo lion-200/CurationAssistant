@@ -24,6 +24,32 @@ namespace CurationAssistant.Controllers
             return View(model);
         }
 
+        public ValidationSummaryViewModel RunValidation(CurationDetailsViewModel model, ValidationVariables vars)
+        {
+            var result = new ValidationSummaryViewModel();
+
+            var validationItems = new List<ValidationItemViewModel>();
+            try
+            {
+                validationItems.Add(ValidationHelper.ValidatePostCreateDateRule(model, vars));
+                validationItems.Add(ValidationHelper.ValidatePostMaxPendingPayoutRule(model, vars));
+                validationItems.Add(ValidationHelper.ValidateAuthorReputationRule(model, vars));
+                validationItems.Add(ValidationHelper.ValidateMinPostsRule(model, vars));
+                validationItems.Add(ValidationHelper.ValidateMinCommentsRule(model, vars));
+
+                var upvoteAccountDetails = GetAccountDetails(vars.UpvoteAccount.Replace("@", ""));
+                validationItems.Add(ValidationHelper.ValidateUpvoteAccountMinVPRule(upvoteAccountDetails, vars));
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+
+            result.Items = validationItems;
+
+            return result;
+        }
+
         [HttpPost]
         [ValidateInput(false)]
         public ActionResult ValidatePost(HomeViewModel model)
@@ -44,6 +70,11 @@ namespace CurationAssistant.Controllers
 
                 // get_discussion
                 result.BlogPost = GetBlogPost(accountName, permlink);
+
+                if (result.BlogPost != null)
+                {
+                    result.ValidationSummary = RunValidation(result, model.ValidationVariables);
+                }
             }
             catch (Exception ex)
             {

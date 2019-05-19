@@ -32,6 +32,11 @@ function CurationDetailsViewModel(data) {
             create: function (options) {
                 return new ActionViewModel(options.data, self);
             }
+        },
+        'ValidationSummary': {
+            create: function (options) {
+                return new ValidationSummaryViewModel(options.data, self);
+            }
         }
     }
 
@@ -43,6 +48,52 @@ function CurationDetailsViewModel(data) {
             ko.mapping.fromJS(data, mapping, self);
     }
 }
+
+function ValidationSummaryViewModel(data, parent) {
+    var self = this;
+    self.parent = parent;
+
+    var mapping = {
+        'Items': {
+            create: function (options) {
+                return new ValidationItemViewModel(options.data, self);
+            }
+        }
+    }
+
+    if (data != null)
+        ko.mapping.fromJS(data, mapping, self);
+}
+
+function ValidationItemViewModel(data, parent) {
+    var self = this;
+    self.parent = parent;
+
+    if (data != null)
+        ko.mapping.fromJS(data, null, self);
+
+    self.ResultDisplayComputed = ko.computed(function () {
+        //return self.ResultTypeDescription() + " - " + self.ResultMessage();
+        return self.ResultMessage();
+    })
+
+    self.ClassComputed = ko.computed(function () {
+        var divClass = "alert alert-";
+
+        if (self.ResultTypeDescription() == "Success") {
+            divClass = divClass + "success";
+        } else if (self.ResultTypeDescription() == "Failure") {
+            divClass = divClass + "danger";
+        } else {
+            divClass = divClass + "warning";
+        }
+
+        divClass += " card-header";
+
+        return divClass;
+    });
+}
+
 
 function ActionViewModel(data, parent) {
     var self = this;
@@ -146,8 +197,7 @@ $("#validateForm").submit(function (e) {
         data: form.serialize(), // serializes the form's elements.
         success: function (result) {
             $("body").loading('stop');
-            console.log(result);
-            //viewModel = new CureDetailsViewModel(result);
+            //console.log(result);
             if ($("#initialized").val() == 1) {
                 viewModel.refreshData(result);
             } else {
@@ -156,9 +206,24 @@ $("#validateForm").submit(function (e) {
             }
 
             $("#initialized").val(1);
+            $(".validationContainer").show();
         },
         error: function (response, textStatus, errorThrown) {
             alert(errorThrown);
         }
     });
+});
+
+
+$(document).ready(function () {
+    $(".validationContainer").hide();
+
+    $('.validationContainer').on('hide.bs.collapse', function (e) {
+        var clicked = $(document).find("[href='#" + $(e.target).attr('id') + "']");
+        clicked.find('.valIcon').removeClass("fa-chevron-up").addClass("fa-chevron-down");
+    })
+    $('.validationContainer').on('show.bs.collapse', function (e) {
+        var clicked = $(document).find("[href='#" + $(e.target).attr('id') + "']");
+        clicked.find('.valIcon').removeClass("fa-chevron-down").addClass("fa-chevron-up");
+    })
 });

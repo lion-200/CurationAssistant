@@ -57,8 +57,7 @@ namespace SteemAPI.CS
 
 		#region Private methods
 		private string SendRequest(string strMethod, ArrayList strParams = null)
-		{
-            Log.Info(string.Format("m_type = {0}", m_eType));
+		{            
 		    if ( m_eType == EType.RPC)
 			{
 				return m_oJson.SendRequest(strMethod, strParams);

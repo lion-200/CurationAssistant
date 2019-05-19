@@ -14,6 +14,8 @@ namespace CurationAssistant.Models
         public List<ActionViewModel> Posts { get; set; }
         public List<ActionViewModel> Votes { get; set; }
 
+        public ValidationSummaryViewModel ValidationSummary { get; set; }
+
         public DateTime LastTransactionDate { get; set; }
 
         public CurationDetailsViewModel()
@@ -23,6 +25,7 @@ namespace CurationAssistant.Models
             Comments = new List<ActionViewModel>();
             Posts = new List<ActionViewModel>();
             Votes = new List<ActionViewModel>();
+            ValidationSummary = new ValidationSummaryViewModel();
         }
     }
 }

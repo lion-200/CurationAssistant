@@ -8,6 +8,7 @@
 
 @using (Html.BeginForm("ValidatePost", "Home", FormMethod.Post, new { @class = "validateForm", id = "validateForm" }))
 {
+    @Html.Partial("_ValidationVariables")
     <br />
     <div class="row">
         <div class="col-sm-12">
@@ -32,6 +33,12 @@
                 <button title="Validate" type="submit" class="btn btn-info btn-lg" id="validatePost">Validate post</button>
             </div>
         </div>
+    </div>
+
+    <br />
+
+    <div id="validationSummary">
+        @Html.Partial("_ValidationSummary")
     </div>
 
     <br />
