@@ -6,6 +6,36 @@
 
 <br />
 
+@using (Html.BeginForm("ValidatePost", "Home", FormMethod.Post, new { @class = "validateForm", id = "validateForm" }))
+{
+    <br />
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="input-group input-group-lg">
+                <h4>Provide the link of the post you wish to validate</h4>
+            </div><!-- /input-group -->
+        </div><!-- /.col-xs-12 -->
+    </div><!-- /.row -->
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="input-group input-group-lg">
+                <input type="hidden" id="initialized" name="initialized" />
+                <input class="form-control" id="postLink" name="postLink" type="text" />
+            </div><!-- /input-group -->
+        </div><!-- /.col-xs-12 -->
+    </div><!-- /.row -->
+    <br />
+    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+                <button title="Validate" type="submit" class="btn btn-info btn-lg" id="validatePost">Validate post</button>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
     <div class="accordion" id="accordionExample">
         <div class="card">
             <div class="card-header" id="headingOne" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -52,3 +82,8 @@
         </div>
     </div>
 
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/Scripts/Custom/curation.js"></script>
+}

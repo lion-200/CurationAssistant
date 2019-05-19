@@ -20,5 +20,13 @@
 input,
 select,
 textarea {
-    max-width: 280px;
+    /*max-width: 280px;*/
+}
+
+.card-header {
+    cursor: pointer;
+}
+
+.curationProgress {
+    height: 30px;
 }
