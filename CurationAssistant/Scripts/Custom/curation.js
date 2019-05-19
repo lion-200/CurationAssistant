@@ -121,15 +121,15 @@ function BlogPostViewModel(data, parent) {
     if (data != null)
         ko.mapping.fromJS(data, null, self);
 
-    //self.createDate = ko.computed(function () {
-    //    return getJsDate(self.Details.created());
-    //});
+    self.createDate = ko.computed(function () {
+        return getJsDate(self.Details.created());
+    });
 
-    //self.postLinkComputed = ko.computed(function () {
-    //    var postLink = parent.BaseUrl() + '/' + self.Details.parent_permlink() + '/' + '@' + self.Details.author() + '/' + self.Details.permlink();
+    self.postLinkComputed = ko.computed(function () {
+        var postLink = parent.BaseUrl() + '/' + self.Details.parent_permlink() + '/' + '@' + self.Details.author() + '/' + self.Details.permlink();
 
-    //    return postLink;
-    //});
+        return postLink;
+    });
 }
 
 $("#validateForm").submit(function (e) {

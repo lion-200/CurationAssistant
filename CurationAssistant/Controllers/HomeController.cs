@@ -2,6 +2,7 @@
 using CurationAssistant.Models;
 using CurationAssistant.Models.SteemModels;
 using CurationAssistant.Models.SteemModels.Partials;
+using Newtonsoft.Json;
 using SteemAPI.CS;
 using System;
 using System.Collections;
@@ -40,6 +41,9 @@ namespace CurationAssistant.Controllers
 
                 // get history 
                 GetAccountHistoryDetails(accountName, result);
+
+                // get_discussion
+                result.BlogPost = GetBlogPost(accountName, permlink);
             }
             catch (Exception ex)
             {
@@ -222,5 +226,58 @@ namespace CurationAssistant.Controllers
                 log.Error(ex);
             }
         }
+
+        private BlogPostViewModel GetBlogPost(string accountName, string permlink)
+        {
+            var blogPost = new BlogPostViewModel();
+            try
+            {
+                blogPost.Details = GetDiscussion(accountName, permlink);
+
+                if (blogPost.Details != null)
+                {
+                    blogPost.WordCount = CalculationHelper.GetWordCount(blogPost.Details.body);
+
+                    blogPost.DiscussionMetadata = JsonConvert.DeserializeObject<DiscussionJsonMetadata>(blogPost.Details.json_metadata);
+                    if (blogPost.DiscussionMetadata != null &&
+                        blogPost.DiscussionMetadata.image != null &&
+                        blogPost.DiscussionMetadata.image.Any())
+                    {
+                        blogPost.ImageCount = blogPost.DiscussionMetadata.image.Count;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+
+
+            return blogPost;
+        }
+
+        private GetDiscussionModel GetDiscussion(string accountName, string permlink)
+        {
+            var blogPost = new GetDiscussionModel();
+
+            try
+            {
+                using (var csteemd = new CSteemd(ConfigurationHelper.HostName))
+                {
+                    var response = csteemd.get_discussion(accountName, permlink);
+                    if (response != null)
+                    {
+                        blogPost = response.ToObject<GetDiscussionModel>();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+
+            return blogPost;
+        }
+
     }
 }
