@@ -134,11 +134,14 @@
     <Compile Include="Models\BlogPostViewModel.cs" />
     <Compile Include="Models\CurationDetailsViewModel.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
+    <Compile Include="Models\OperationCommentViewModel.cs" />
+    <Compile Include="Models\OperationVoteViewModel.cs" />
     <Compile Include="Models\SteemModels\GetAccountsModel.cs" />
     <Compile Include="Models\SteemModels\GetDiscussionModel.cs" />
     <Compile Include="Models\SteemModels\GetDynamicGlobalPropertiesModel.cs" />
     <Compile Include="Models\SteemModels\Partials\BaseTransactionOperationModel.cs" />
     <Compile Include="Models\SteemModels\Partials\DiscussionJsonMetadata.cs" />
+    <Compile Include="Models\SteemModels\Partials\TransactionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

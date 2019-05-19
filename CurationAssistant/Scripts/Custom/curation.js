@@ -51,45 +51,45 @@ function ActionViewModel(data, parent) {
     if (data != null)
         ko.mapping.fromJS(data, null, self);
 
-    //self.createDate = ko.computed(function () {
-    //    return getJsDate(self.TimeStamp());
-    //});
+    self.createDate = ko.computed(function () {
+        return getJsDate(self.TimeStamp());
+    });
 
-    //self.postLinkComputed = ko.computed(function () {
-    //    var postLink = "";
-    //    if (self.Type() != "vote") {
-    //        postLink = parent.BaseUrl() + '/' + self.Details.parent_permlink() + '/' + '@' + self.Details.author() + '/' + self.Details.permlink();
-    //    }
+    self.postLinkComputed = ko.computed(function () {
+        var postLink = "";
+        if (self.Type() != "vote") {
+            postLink = parent.BaseUrl() + '/' + self.Details.parent_permlink() + '/' + '@' + self.Details.author() + '/' + self.Details.permlink();
+        }
 
-    //    return postLink;
-    //});
+        return postLink;
+    });
 
-    //self.voteComputed = ko.computed(function () {
-    //    var votecmp = "";
-    //    if (self.Type() == "vote") {
-    //        votecmp = Math.round(parseFloat(self.Details.weight() / 100)) + "%";
-    //    }
+    self.voteComputed = ko.computed(function () {
+        var votecmp = "";
+        if (self.Type() == "vote") {
+            votecmp = Math.round(parseFloat(self.Details.weight() / 100)) + "%";
+        }
 
-    //    return votecmp;
-    //});
+        return votecmp;
+    });
 
-    //self.commentLinkComputed = ko.computed(function () {
-    //    var prm = "";
-    //    if (self.Type() == "comment") {
-    //        prm = parent.BaseUrl() + '/' + '@' + self.Details.author() + '/' + self.Details.permlink();
-    //    }
+    self.commentLinkComputed = ko.computed(function () {
+        var prm = "";
+        if (self.Type() == "comment") {
+            prm = parent.BaseUrl() + '/' + '@' + self.Details.author() + '/' + self.Details.permlink();
+        }
 
-    //    return prm;
-    //})
+        return prm;
+    })
 
-    //self.voteLinkComputed = ko.computed(function () {
-    //    var voteLink = "";
-    //    if (self.Type() == "vote") {
-    //        voteLink = parent.BaseUrl() + '/' + '@' + self.Details.author() + '/' + self.Details.permlink();
-    //    }
+    self.voteLinkComputed = ko.computed(function () {
+        var voteLink = "";
+        if (self.Type() == "vote") {
+            voteLink = parent.BaseUrl() + '/' + '@' + self.Details.author() + '/' + self.Details.permlink();
+        }
 
-    //    return voteLink;
-    //});
+        return voteLink;
+    });
 }
 
 function AuthorViewModel(data, parent) {
@@ -99,9 +99,9 @@ function AuthorViewModel(data, parent) {
     if (data != null)
         ko.mapping.fromJS(data, null, self);
 
-    //self.createDate = ko.computed(function () {
-    //    return getJsDate(self.Details.created());
-    //});
+    self.createDate = ko.computed(function () {
+        return getJsDate(self.Details.created());
+    });
 }
 
 function getJsDate(dotNetDate) {
