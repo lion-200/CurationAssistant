@@ -1,0 +1,42 @@
+﻿<div class="curationDetailsAccount">
+    <table class="table">
+        <tbody>
+            <tr>
+                <th scope="row">Account</th>
+                <td><span data-bind="text: Author().Details.name"></span></td>
+            </tr>
+
+            <tr>
+                <th scope="row">SteemPower</th>
+                <td>
+                    <span class="btn btn-primary" data-bind="text: Author().SteemPowerCalculated()"></span>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Reputation</th>
+                <td>
+                    <div class="progress curationProgress">
+                        <div data-bind="attr: { style: 'width: ' + Author().ReputationCalculated() + '%', 'aria-valuenow': Author().ReputationCalculated() }" class="progress-bar progress-bar-striped" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                            <span data-bind="text: Author().ReputationCalculated()"></span>
+                        </div>
+                    </div>
+
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">VP %</th>
+                <td>
+                    <div class="progress curationProgress">
+                        <div data-bind="attr: { style: 'width: ' + Author().VotingManaPercentageCalculated() + '%', 'aria-valuenow': Author().VotingManaPercentageCalculated() }" class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                            <span data-bind="text: Author().VotingManaPercentageCalculated() + ' %'"></span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Created</th>
+                <td><span data-bind="text: Author().createDate()"></span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

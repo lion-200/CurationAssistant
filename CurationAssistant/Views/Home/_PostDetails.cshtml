@@ -1,0 +1,40 @@
+﻿<div class="curationDetailsBlogPost">
+    <table class="table">
+        <tbody>
+            <tr>
+                <th scope="row">Author</th>
+                <td><span data-bind="text: BlogPost().Details.author"></span></td>
+            </tr>
+            <tr>
+                <th scope="row">Post</th>
+                <td>
+                    <a data-bind="attr: { href: BlogPost().postLinkComputed() }" target="_blank">
+                        <span data-bind="text: BlogPost().Details.title"></span>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Create date</th>
+                <td><span data-bind="text: BlogPost().createDate"></span></td>
+            </tr>
+            <tr>
+                <th scope="row">Words</th>
+                <td><span data-bind="text: BlogPost().WordCount"></span></td>
+            </tr>
+            <tr>
+                <th scope="row">Images</th>
+                <td><span data-bind="text: BlogPost().ImageCount"></span></td>
+            </tr>
+            <tr>
+                <th scope="row">Tags</th>
+                <td>
+                    <div class="tags" data-bind="foreach: { data: BlogPost().DiscussionMetadata.tags, as: 'tag' }">
+                        <a class="btn btn-info" data-bind="attr: { href: $root.BaseUrl() + '/trending/' + tag }" target="_blank">
+                            <span data-bind="text: tag"></span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

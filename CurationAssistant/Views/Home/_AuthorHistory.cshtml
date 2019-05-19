@@ -1,0 +1,73 @@
+﻿<div id="transactionHistory">
+    <div class="posts">
+        <h3>Posts</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="row" class="w-25">Date</th>
+                    <th scope="row" class="w-25">Author</th>
+                    <th scope="row" class="w-50">Title</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: { data: Posts, as: 'post' }">
+                <tr>
+                    <td><span data-bind="text: post.createDate()"></span></td>
+                    <td><span data-bind="text: post.Details.author()"></span></td>
+                    <td>
+                        <a data-bind="attr: { href: post.postLinkComputed() }" target="_blank">
+                            <span data-bind="text: post.Details.title()"></span>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="comments">
+        <h3>Comments</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="row" class="w-25">Date</th>
+                    <th scope="row" class="w-25">Commented to</th>
+                    <th scope="row" class="w-50">Title</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: { data: Comments, as: 'comment' }">
+                <tr>
+                    <td><span data-bind="text: comment.createDate()"></span></td>
+                    <td><span data-bind="text: comment.Details.parent_author()"></span></td>
+                    <td>
+                        <a data-bind="attr: { href: comment.commentLinkComputed() }" target="_blank">
+                            <span data-bind="text: comment.Details.permlink()"></span>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="votes">
+        <h3>Votes</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="row" class="w-25">Date</th>
+                    <th scope="row" class="w-25">Voted to</th>
+                    <th scope="row" class="w-25">Weight</th>
+                    <th scope="row" class="w-25">Link</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: { data: Votes, as: 'vote' }">
+                <tr>
+                    <td><span data-bind="text: vote.createDate()"></span></td>
+                    <td><span data-bind="text: vote.Details.author()"></span></td>
+                    <td><span data-bind="text: vote.voteComputed()"></span></td>
+                    <td>
+                        <a data-bind="attr: { href: vote.voteLinkComputed() }" target="_blank">
+                            <span data-bind="text: vote.Details.permlink()"></span>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
