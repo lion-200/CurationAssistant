@@ -3,7 +3,11 @@
         <tbody>
             <tr>
                 <th scope="row">Author</th>
-                <td><span data-bind="text: BlogPost().Details.author"></span></td>
+                <td>
+                    <a data-bind="attr: { href: $root.BaseUrl() + '/@@' + BlogPost().Details.author() }" target="_blank">
+                        <span data-bind="text: BlogPost().Details.author"></span>
+                    </a>
+                </td>
             </tr>
             <tr>
                 <th scope="row">Post</th>

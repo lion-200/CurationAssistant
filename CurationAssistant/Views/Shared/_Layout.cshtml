@@ -35,7 +35,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Steem Curation Assistant by @Html.Raw("@lion200")</p>
+            <p>&copy; @DateTime.Now.Year - Steem Curation Assistant by @Html.Raw(String.Format("<a href='{0}' target='_blank'>{1}</a>", "https://steemit.com/@lion200", "@lion200"))</p>
         </footer>
     </div>
 
