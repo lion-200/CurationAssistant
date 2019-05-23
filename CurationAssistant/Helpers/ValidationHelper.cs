@@ -125,7 +125,7 @@ namespace CurationAssistant.Helpers
             var dateCheck = DateTime.Now.AddDays(-vars.PostsMinDays);
             var postCount = model.Posts.Count(x => x.TimeStamp >= dateCheck);                       
             
-            if (postCount > vars.PostsMin)
+            if (postCount >= vars.PostsMin)
             {
                 resultType = ValidationResultType.Success;
                 validationItem.ResultMessage = string.Format("Author posted {0} posts in last {1} days.", postCount, vars.PostsMinDays);
