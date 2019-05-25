@@ -70,35 +70,6 @@ namespace CurationAssistant.Helpers
             var vpNow = accountDetails.voting_power + (10000 * secondsAgo / 432000);
             var vp = Math.Min(Math.Round(vpNow / 100, 2), 100);
             return (decimal)vp;
-            //Int32 currentTime = (Int32)(dynamicProps.time.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-
-            //decimal vestingShares = 0;
-            //Decimal.TryParse(accountDetails.vesting_shares.Replace("VESTS", "").Trim(), out vestingShares);
-
-            //decimal receivedVestingShares = 0;
-            //Decimal.TryParse(accountDetails.received_vesting_shares.Replace("VESTS", "").Trim(), out receivedVestingShares);
-
-            //decimal delegatedVestingShares = 0;
-            //Decimal.TryParse(accountDetails.delegated_vesting_shares.Replace("VESTS", "").Trim(), out delegatedVestingShares);
-
-            //var totalShares = vestingShares + receivedVestingShares - delegatedVestingShares;
-
-            //var elapsed = currentTime - accountDetails.voting_manabar.last_update_time;
-            //var maxMana = totalShares * 1000000;
-
-            //decimal currentMana = 0;
-            //Decimal.TryParse(accountDetails.voting_manabar.current_mana, out currentMana);
-
-            //var currentManaCalculated = currentMana + elapsed * maxMana / 432000;
-
-            //if (currentManaCalculated > maxMana)
-            //{
-            //    currentManaCalculated = maxMana;
-            //}
-            ////determine percentage of available mana(RC)
-            //var currentManaPerc = currentManaCalculated * 100 / maxMana;
-
-            //return Math.Round(currentManaPerc, 2);
         }
 
         public static decimal CalculateSteemPerMVests(GetDynamicGlobalPropertiesModel props)
@@ -111,6 +82,15 @@ namespace CurationAssistant.Helpers
             steemPerMVests = (Decimal)(totalVestingSteem / (totalVestingShares / 1e6));           
 
             return steemPerMVests;
+        }
+
+        public static decimal ParsePayout(string payout_value)
+        {
+            decimal payoutValue = 0;
+            var payoutString = payout_value.Replace("SBD", "").Trim();
+            Decimal.TryParse(payoutString, out payoutValue);
+
+            return payoutValue;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace CurationAssistant.Models.SteemModels
     public class GetDiscussionModel
     {
         public int id { get; set; }
+        public int post_id { get; set; }
         public string author { get; set; }
         public string permlink { get; set; }
         public string category { get; set; }

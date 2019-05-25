@@ -1,7 +1,9 @@
 ﻿using CurationAssistant.Helpers;
+using CurationAssistant.Mappers;
 using CurationAssistant.Models;
 using CurationAssistant.Models.SteemModels;
 using CurationAssistant.Models.SteemModels.Partials;
+using CurationAssistant.Models.TransactionHistory;
 using Newtonsoft.Json;
 using SteemAPI.CS;
 using System;
@@ -199,6 +201,9 @@ namespace CurationAssistant.Controllers
         {
             try
             {
+                // get posts
+                result.Posts = GetAccountPosts(accountName);
+
                 var limit = Convert.ToInt32(ConfigurationHelper.HistoryTransactionLimit);
                 uint batchSize = 1000;
                 var start = -1;
@@ -254,17 +259,7 @@ namespace CurationAssistant.Controllers
                             else if (operationType == "comment")
                             {
                                 var operationModel = operation[1].ToObject<OperationCommentViewModel>();
-                                if (String.IsNullOrEmpty(operationModel.parent_author)) // post
-                                {
-                                    actionViewModel.Type = "post";
-                                    actionViewModel.Details = operationModel;
-
-                                    if (result.Posts.Count < ConfigurationHelper.PostTransactionCount)
-                                    {
-                                        result.Posts.Add(actionViewModel);
-                                    }
-                                }
-                                else
+                                if (!String.IsNullOrEmpty(operationModel.parent_author)) // post
                                 {
                                     actionViewModel.Type = "comment";
                                     actionViewModel.Details = operationModel;
@@ -278,9 +273,7 @@ namespace CurationAssistant.Controllers
                             }
 
                             // if the required amount of counts are reached, stop
-                            if (result.Comments.Count == ConfigurationHelper.CommentTransactionCount &&
-                                //result.Votes.Count == ConfigurationHelper.VoteTransactionCount &&
-                                result.Posts.Count == ConfigurationHelper.PostTransactionCount)
+                            if (result.Comments.Count == ConfigurationHelper.CommentTransactionCount)
                             {
                                 break;
                             }
@@ -295,6 +288,42 @@ namespace CurationAssistant.Controllers
             {
                 log.Error(ex);
             }
+        }
+
+        /// <summary>
+        /// This method calls the get_discussions_by_blog method from Steem API and returns the mapped list of <see cref="DiscussionListViewModel" /> models
+        /// </summary>
+        /// <param name="accountName">The name of the account to get posts for</param>
+        /// <returns>List of <see cref="DiscussionListViewModel" /> models</returns>
+        private List<DiscussionListViewModel> GetAccountPosts(string accountName)
+        {
+            var posts = new List<DiscussionListViewModel>();
+
+            try
+            {
+                using (var csteemd = new CSteemd(ConfigurationHelper.HostName))
+                {
+                    var steemResponse = csteemd.get_discussions_by_blog(accountName, ConfigurationHelper.PostTransactionCount);
+                    var discussionList = new List<GetDiscussionModel>();
+
+                    if(steemResponse != null && steemResponse.Count > 0)
+                    {
+                        foreach(var item in steemResponse)
+                        {
+                            var disc = item.ToObject<GetDiscussionModel>();
+                            var post = DiscussionMapper.ToDiscussionListViewModel(disc, accountName);
+
+                            posts.Add(post);
+                        }
+                    }                    
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+
+            return posts;
         }
 
         /// <summary>

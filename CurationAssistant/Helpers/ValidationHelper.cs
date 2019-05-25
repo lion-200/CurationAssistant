@@ -123,7 +123,7 @@ namespace CurationAssistant.Helpers
 
             // get posts within range
             var dateCheck = DateTime.Now.AddDays(-vars.PostsMinDays);
-            var postCount = model.Posts.Count(x => x.TimeStamp >= dateCheck);                       
+            var postCount = model.Posts.Count(x => x.CreatedAt >= dateCheck);                       
             
             if (postCount >= vars.PostsMin)
             {

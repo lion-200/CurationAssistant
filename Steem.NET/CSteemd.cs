@@ -296,6 +296,22 @@ namespace SteemAPI.CS
 
             return call_api_token(method, arrParams);            
         }
+
+        public JArray get_discussions_by_blog(string tag, int limit, ArrayList filterTags = null, ArrayList selectAuthors = null, ArrayList selectTags = null, bool? truncateBody = null)
+        {
+            var dictParams = new Dictionary<string, object>
+            {
+                { "tag", tag },
+                { "limit", limit }
+            };
+
+            if (filterTags != null) dictParams.Add("filter_tags", filterTags);
+            if (selectAuthors != null) dictParams.Add("select_authors", selectAuthors);
+            if (selectTags != null) dictParams.Add("select_tags", selectTags);
+            if (truncateBody != null) dictParams.Add("truncate_body", truncateBody);
+
+            return call_api_array(MethodBase.GetCurrentMethod().Name, new ArrayList { dictParams });
+        }
         #endregion
     }
 }

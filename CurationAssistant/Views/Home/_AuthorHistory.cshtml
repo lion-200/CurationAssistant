@@ -5,17 +5,35 @@
             <thead>
                 <tr>
                     <th scope="row" class="w-25">Date</th>
-                    <th scope="row" class="w-25">Author</th>
+                    <th scope="row" class="w-25 text-right">Pending payout / Paid out</th>
+                    <th scope="row" class="w-25">Image</th>
                     <th scope="row" class="w-50">Title</th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: { data: Posts, as: 'post' }">
                 <tr>
-                    <td><span data-bind="text: post.createDate()"></span></td>
-                    <td><span data-bind="text: post.Details.author()"></span></td>
+                    <td>
+                        <span data-bind="html: post.createDate()"></span><br />
+                        <span class="small" data-bind="html: post.createDateDiff()"></span>
+                    </td>
+                    <td>
+                        <span class="float-right" data-bind="html: post.payoutDisplayComputed()"></span>                        
+                        <!-- ko if: post.IsResteem() -->
+                        <div class="float-right">
+                            <i class="fas fa-redo"></i><span> resteemed</span>
+                        </div>
+                        <!-- /ko -->
+                    </td>
                     <td>
                         <a data-bind="attr: { href: post.postLinkComputed() }" target="_blank">
-                            <span data-bind="text: post.Details.title()"></span>
+                            <div class="w-100">
+                                <img data-bind="attr: { src: post.MainImage() }" class="rounded img-thumbnail" />
+                            </div>
+                        </a>
+                    </td>
+                    <td>
+                        <a data-bind="attr: { href: post.postLinkComputed() }" target="_blank">
+                            <span data-bind="text: post.Title"></span>
                         </a>
                     </td>
                 </tr>

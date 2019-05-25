@@ -5,7 +5,7 @@ function CurationDetailsViewModel(data) {
     self.Author = ko.observable();
     self.BlogPost = ko.observable();
     self.ValidationSummary = ko.observable();
-    self.BaseUrl = ko.observable("https://steemit.com");
+    self.BaseUrl = ko.observable("https://steemit.com");    
 
     var mapping = {
         'Author': {
@@ -25,7 +25,7 @@ function CurationDetailsViewModel(data) {
         },
         'Posts': {
             create: function (options) {
-                return new ActionViewModel(options.data, self);
+                return new DiscussionListViewModel(options.data, self);
             }
         },
         'Votes': {
@@ -156,13 +156,46 @@ function AuthorViewModel(data, parent) {
 }
 
 function getJsDate(dotNetDate) {
-    var jsDate = new Date(parseInt(dotNetDate.substr(6)));
+    var offset = new Date().getTimezoneOffset();
+    var jsDate = new Date(parseInt(dotNetDate.substr(6)));     
+    jsDate.setMinutes(jsDate.getMinutes() - offset);    
 
-    var minutes = (jsDate.getMinutes() < 10 ? '0' : '') + jsDate.getMinutes();
-    var hours = (jsDate.getHours() < 10 ? '0' : '') + jsDate.getHours();
-    var jsDateDisplay = jsDate.getDate() + "-" + (jsDate.getMonth() + 1) + "-" + jsDate.getFullYear() + " " + hours + ":" + minutes;
+    var minutes = ("0" + jsDate.getMinutes()).slice(-2);//(jsDate.getMinutes() < 10 ? '0' : '') + jsDate.getMinutes();
+    var hours = ("0" + jsDate.getHours()).slice(-2);//(jsDate.getHours() < 10 ? '0' : '') + jsDate.getHours();
+    var getDate = ("0" + jsDate.getDate()).slice(-2);
+    var jsDateDisplay = getDate + "-" + (jsDate.getMonth() + 1) + "-" + jsDate.getFullYear() + " " + hours + ":" + minutes;
+
+    //if (showDateDiff) {
+    //    var jsDateUnix = new Date(jsDate.getFullYear(), jsDate.getMonth(), jsDate.getDate(), jsDate.getHours(), jsDate.getMinutes(), jsDate.getSeconds());
+    //    jsDateDisplay += "<br /> (" + getJsDateDiff(jsDateUnix) + ")";
+    //}
 
     return jsDateDisplay;
+}
+
+function getJsDateDiff(dotNetDate) {
+    var offset = new Date().getTimezoneOffset();
+    var jsDate = new Date(parseInt(dotNetDate.substr(6)));
+    jsDate.setMinutes(jsDate.getMinutes() - offset);    
+
+    var delta = Math.abs(Date.now() - jsDate) / 1000;
+
+    // calculate (and subtract) whole days
+    var days = Math.floor(delta / 86400);
+    delta -= days * 86400;
+
+    // calculate (and subtract) whole hours
+    var hours = Math.floor(delta / 3600) % 24;
+    delta -= hours * 3600;
+
+    // calculate (and subtract) whole minutes
+    var minutes = Math.floor(delta / 60) % 60;
+    delta -= minutes * 60;
+
+    // what's left is seconds
+    //var seconds = delta % 60;  // in theory the modulus is not required
+
+    return "(" + days + " days " + hours + " hours " + minutes + " minutes ago)";
 }
 
 function BlogPostViewModel(data, parent) {
@@ -174,7 +207,7 @@ function BlogPostViewModel(data, parent) {
 
     self.createDate = ko.computed(function () {
         return getJsDate(self.Details.created());
-    });
+    });    
 
     self.postLinkComputed = ko.computed(function () {
         var postLink = parent.BaseUrl() + '/' + self.Details.parent_permlink() + '/' + '@' + self.Details.author() + '/' + self.Details.permlink();
@@ -183,13 +216,42 @@ function BlogPostViewModel(data, parent) {
     });
 }
 
+function DiscussionListViewModel(data, parent) {
+    var self = this;
+    self.parent = parent;
+
+    if (data != null)
+        ko.mapping.fromJS(data, null, self);
+
+    self.createDate = ko.computed(function () {
+        return getJsDate(self.CreatedAt());
+    });
+
+    self.createDateDiff = ko.computed(function () {
+        return getJsDateDiff(self.CreatedAt());
+    });
+
+    self.postLinkComputed = ko.computed(function () {
+        var postLink = parent.BaseUrl() + '/' + self.ParentPermlink() + '/' + '@' + self.Author() + '/' + self.Permlink();
+
+        return postLink;
+    });
+
+    self.payoutDisplayComputed = ko.computed(function () {
+        var displayValue = '$' + self.PendingPayout() + ' / $' + self.PaidOut();
+        if (self.IsResteem())
+            displayValue = "";
+
+        return displayValue;
+    });
+}
+
 $("#validateForm").submit(function (e) {
     e.preventDefault(); // avoid to execute the actual submit of the form.
     $("body").loading();
 
     var form = $(this);
-    var url = form.attr('action');
-    console.log(url);
+    var url = form.attr('action');    
 
     $.ajax({
         type: "POST",
@@ -197,7 +259,7 @@ $("#validateForm").submit(function (e) {
         data: form.serialize(), // serializes the form's elements.
         success: function (result) {
             $("body").loading('stop');
-            //console.log(result);
+            
             if ($("#initialized").val() == 1) {
                 viewModel.refreshData(result);
             } else {
