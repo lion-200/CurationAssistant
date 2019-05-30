@@ -18,6 +18,7 @@ namespace CurationAssistant.Models
         public int CommentsMinDays { get; set; }
         public string UpvoteAccount { get; set; }
         public decimal VPMinRequired { get; set; }
+        public decimal TotalMaxPendingPayout { get; set; }
 
         public ValidationVariables()
         {
@@ -32,6 +33,7 @@ namespace CurationAssistant.Models
             CommentsMinDays = 7;
             UpvoteAccount = "curie";
             VPMinRequired = 88;
+            TotalMaxPendingPayout = 10;
         }
     }
 }

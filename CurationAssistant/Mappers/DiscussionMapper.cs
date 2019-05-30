@@ -35,11 +35,7 @@ namespace CurationAssistant.Mappers
                 // if pending payout = 0, it might be the case that it is already paid out, so get the paid out value
                 if (output.PendingPayout == 0)
                 {
-                    var totalPayout = CalculationHelper.ParsePayout(input.total_payout_value);
-                    var curatorPayout = CalculationHelper.ParsePayout(input.curator_payout_value);
-
-                    // we are only interested in the author payout, substract the curator payout from total payuout
-                    output.PaidOut = totalPayout - curatorPayout;
+                    output.PaidOut = CalculationHelper.ParsePayout(input.total_payout_value);
                 }
             }
 

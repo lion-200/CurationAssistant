@@ -41,6 +41,7 @@ namespace CurationAssistant.Controllers
             {
                 validationItems.Add(ValidationHelper.ValidatePostCreateDateRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidatePostMaxPendingPayoutRule(model, vars));
+                validationItems.Add(ValidationHelper.ValidateTotalMaxPendingPayoutRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidateAuthorReputationRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidateMinPostsRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidateMinCommentsRule(model, vars));
@@ -202,7 +203,13 @@ namespace CurationAssistant.Controllers
             try
             {
                 // get posts
-                result.Posts = GetAccountPosts(accountName);
+                var posts = GetAccountPosts(accountName);
+                if (posts != null && posts.Any())
+                    result.LastRetrievedPostDate = posts.LastOrDefault().CreatedAt;
+
+                result.Author.PendingPostPayout = CalculationHelper.CalculatePendingPostPayout(accountName, posts);
+                
+                result.Posts = posts.Take(ConfigurationHelper.PostTransactionCount).ToList();
 
                 var limit = Convert.ToInt32(ConfigurationHelper.HistoryTransactionLimit);
                 uint batchSize = 1000;
@@ -297,13 +304,14 @@ namespace CurationAssistant.Controllers
         /// <returns>List of <see cref="DiscussionListViewModel" /> models</returns>
         private List<DiscussionListViewModel> GetAccountPosts(string accountName)
         {
+            var postCountToGet = 30;
             var posts = new List<DiscussionListViewModel>();
 
             try
             {
                 using (var csteemd = new CSteemd(ConfigurationHelper.HostName))
                 {
-                    var steemResponse = csteemd.get_discussions_by_blog(accountName, ConfigurationHelper.PostTransactionCount);
+                    var steemResponse = csteemd.get_discussions_by_blog(accountName, postCountToGet);
                     var discussionList = new List<GetDiscussionModel>();
 
                     if(steemResponse != null && steemResponse.Count > 0)

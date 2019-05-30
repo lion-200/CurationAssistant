@@ -41,6 +41,10 @@
                 <th scope="row">Created</th>
                 <td><span data-bind="text: Author().createDate()"></span></td>
             </tr>
+            <tr>
+                <th scope="row">Pending payout (posts)</th>
+                <td><span data-bind="text: '$' + Author().PendingPostPayout()"></span></td>
+            </tr>
         </tbody>
     </table>
 </div>

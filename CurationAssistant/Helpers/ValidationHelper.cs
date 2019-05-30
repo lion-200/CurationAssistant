@@ -81,6 +81,52 @@ namespace CurationAssistant.Helpers
             return validationItem;
         }
 
+        public static ValidationItemViewModel ValidateTotalMaxPendingPayoutRule(CurationDetailsViewModel model, ValidationVariables vars)
+        {
+            var validationItem = new ValidationItemViewModel();
+
+            ValidationPriority prio = ValidationPriority.High;
+            ValidationResultType resultType = ValidationResultType.Failure;
+
+            validationItem.Title = string.Format("Total max pending payout value < {0}", vars.TotalMaxPendingPayout);
+            validationItem.Priority = prio;
+            validationItem.PriorityDescription = prio.ToString();
+            validationItem.OrderId = 3;            
+            
+            // if the oldest post retrieved is a more recent post than 1 week before current date, we don't have enough data to validate this rule
+            var dateCheck = DateTime.Now.AddDays(-7);
+            if (model.LastRetrievedPostDate > dateCheck)
+            {
+                if(model.Author.PendingPostPayout > vars.TotalMaxPendingPayout)
+                {
+                    resultType = ValidationResultType.Failure;
+                } else
+                {
+                    resultType = ValidationResultType.Neutral;
+                    validationItem.ResultMessage = string.Format("Dataset retrieved does not contain enough data to validate this rule. Oldest retrieved post date in data set is {0}", model.LastRetrievedPostDate.ToString("yyyy-MM-dd HH:mm"));
+                }
+            }
+            else
+            {
+                if (model.Author.PendingPostPayout <= vars.TotalMaxPendingPayout)
+                {
+                    resultType = ValidationResultType.Success;
+                }
+                else
+                {
+                    resultType = ValidationResultType.Failure;
+                }
+            }
+
+            validationItem.ResultType = resultType;
+            validationItem.ResultTypeDescription = resultType.ToString();
+
+            if(String.IsNullOrEmpty(validationItem.ResultMessage))
+                validationItem.ResultMessage = string.Format("Total pending payout value = ${0}", model.Author.PendingPostPayout.ToString("N"));
+
+            return validationItem;
+        }
+
         public static ValidationItemViewModel ValidateAuthorReputationRule(CurationDetailsViewModel model, ValidationVariables vars)
         {
             ValidationPriority prio = ValidationPriority.High;
@@ -123,7 +169,7 @@ namespace CurationAssistant.Helpers
 
             // get posts within range
             var dateCheck = DateTime.Now.AddDays(-vars.PostsMinDays);
-            var postCount = model.Posts.Count(x => x.CreatedAt >= dateCheck);                       
+            var postCount = model.Posts.Count(x => x.CreatedAt >= dateCheck);
             
             if (postCount >= vars.PostsMin)
             {

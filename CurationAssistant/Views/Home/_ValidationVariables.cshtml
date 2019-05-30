@@ -9,25 +9,56 @@
     <div class="collapse" id="validationVariables">
         <div class="card card-body">
             <div class="row">
-                <div class="col-sm-4"><label>Post create date range (min / max in minutes)</label></div>
+                <div class="col-sm-4">
+                    <label>
+                        Post create date range<br />
+                        <small>(min / max in minutes)</small>
+                    </label>
+                </div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.PostCreatedAtMin, new { @class = "form-control", placeholder = "Min (minutes)", aria_label = "Min (minutes)" })</div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.PostCreatedAtMax, new { @class = "form-control", placeholder = "Max (minutes)", aria_label = "Max (minutes)" })</div>
             </div>
             <hr />
             <div class="row">
-                <div class="col-sm-4"><label>Post max pending payout (in $)</label></div>
+                <div class="col-sm-4">
+                    <label>
+                        Post max pending payout<br />
+                        <small>(in $)</small>
+                    </label>
+                </div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.PostMaxPendingPayout, new { @class = "form-control", placeholder = "$ max pending payout", aria_label = "$ max pending payout" })</div>
                 <div class="col-sm-4"></div>
             </div>
             <hr />
             <div class="row">
-                <div class="col-sm-4"><label>Author reputation range (min / max)</label></div>
+                <div class="col-sm-4">
+                    <label>
+                        Total max pending payout<br />
+                        <small>(in $)</small>
+                    </label>
+                </div>
+                <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.TotalMaxPendingPayout, new { @class = "form-control", placeholder = "$ max pending payout", aria_label = "$ max pending payout" })</div>
+                <div class="col-sm-4"></div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-sm-4">
+                    <label>
+                        Author reputation range<br />
+                        <small>(min / max)</small>
+                    </label>
+                </div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.AuthorRepMin, new { @class = "form-control", placeholder = "Min (#.##)", aria_label = "Min (#.##)" })</div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.AuthorRepMax, new { @class = "form-control", placeholder = "Max (#.##)", aria_label = "Max (#.##)" })</div>
             </div>
             <hr />
             <div class="row">
-                <div class="col-sm-4"><label>Minimum # Posts (excl. comments) in x days (count / days)</label></div>
+                <div class="col-sm-4">
+                    <label>
+                        Minimum # Posts<br />
+                        <small>(excl. comments) in x days (count / days)</small>
+                    </label>
+                </div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.PostsMin, new { @class = "form-control", placeholder = "Post amount", aria_label = "Post amount" })</div>
                 <div class="col-sm-4">
                     <select name="ValidationVariables.PostsMinDays" class="form-control">
@@ -45,8 +76,14 @@
                     </select>
                 </div>
             </div>
+            <hr />
             <div class="row">
-                <div class="col-sm-4"><label>Minimum # Comments in x days (count / days)</label></div>
+                <div class="col-sm-4">
+                    <label>
+                        Minimum # Comments<br />
+                        <small>in x days (count / days)</small>
+                    </label>
+                </div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.CommentsMin, new { @class = "form-control", placeholder = "Post amount", aria_label = "Post amount" })</div>
                 <div class="col-sm-4">
                     <select name="ValidationVariables.CommentsMinDays" class="form-control">
@@ -66,7 +103,12 @@
             </div>
             <hr />
             <div class="row">
-                <div class="col-sm-4"><label>Upvote account (accountname / minimum VP % required)</label></div>
+                <div class="col-sm-4">
+                    <label>
+                        Upvote account VP<br />
+                        <small>(accountname / minimum VP % required)</small>
+                    </label>
+                </div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.UpvoteAccount, new { @class = "form-control", placeholder = "Account name", aria_label = "Account name" })</div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.VPMinRequired, new { @class = "form-control", placeholder = "Min VP %", aria_label = "Min VP %" })</div>
             </div>

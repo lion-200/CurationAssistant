@@ -18,6 +18,7 @@ namespace CurationAssistant.Models
         public ValidationSummaryViewModel ValidationSummary { get; set; }
 
         public DateTime LastTransactionDate { get; set; }
+        public DateTime LastRetrievedPostDate { get; set; }
 
         public CurationDetailsViewModel()
         {

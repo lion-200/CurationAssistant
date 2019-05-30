@@ -12,5 +12,8 @@ namespace CurationAssistant.Models
         public decimal SteemPowerCalculated { get; set; }
         public decimal ReputationCalculated { get; set; }
         public decimal VotingManaPercentageCalculated { get; set; }
+        public decimal PendingPostPayout { get; set; }
+        public decimal PendingCommentPayout { get; set; }
+
     }
 }

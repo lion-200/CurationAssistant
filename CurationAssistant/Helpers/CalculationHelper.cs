@@ -1,4 +1,5 @@
 ﻿using CurationAssistant.Models.SteemModels;
+using CurationAssistant.Models.TransactionHistory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,6 +92,25 @@ namespace CurationAssistant.Helpers
             Decimal.TryParse(payoutString, out payoutValue);
 
             return payoutValue;
+        }
+
+        public static decimal CalculatePendingPostPayout(string accountName, List<DiscussionListViewModel> posts)
+        {
+            decimal total = 0;
+
+            if(posts != null && posts.Any())
+            {
+                foreach(var p in posts)
+                {
+                    // skip resteemed posts
+                    if(p.Author == accountName)
+                    {
+                        total += p.PendingPayout;
+                    }
+                }
+            }
+
+            return total;
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Collections;
 using log4net;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace SteemAPI.CS
 {
@@ -154,8 +155,9 @@ namespace SteemAPI.CS
 			int nRetry = 0;
 			string strResult = string.Empty;
 			Hashtable arrRequest = new Hashtable();
+            JObject arrResponse = new JObject();
 
-			arrRequest["jsonrpc"] = m_oJsonRpc.Version;
+            arrRequest["jsonrpc"] = m_oJsonRpc.Version;
 			arrRequest["id"] = getRequestID();
 			arrRequest["method"] = strMethod;
             if (strParams != null)
@@ -169,6 +171,11 @@ namespace SteemAPI.CS
 				try
 				{
 					strResult = GetHttpRequest(strJson, EHTTPMethod.POST);
+                    arrResponse = (JObject)JsonConvert.DeserializeObject(strResult);
+                    var error = arrResponse["error"];
+                    if (error != null && error.HasValues)
+                        Log.Error(error.ToString());
+                    
 					break;
 				}
 				catch(Exception ex)

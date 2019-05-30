@@ -187,7 +187,7 @@ namespace SteemAPI.CS
             return call_api_array(MethodBase.GetCurrentMethod().Name, new ArrayList { dictParams });
         }
 
-        public JArray get_discussions_by_active(string tag, int limit, ArrayList filterTags = null, ArrayList selectAuthors = null, ArrayList selectTags = null, bool? truncateBody = null)
+        public JArray get_discussions_by_active(string tag, int limit, ArrayList filterTags = null, ArrayList selectAuthors = null, ArrayList selectTags = null, bool? truncateBody = null, string api = "condenser_api")
         {
             var dictParams = new Dictionary<string, object>
             {
@@ -200,7 +200,11 @@ namespace SteemAPI.CS
             if (selectTags != null) dictParams.Add("select_tags", selectTags);
             if (truncateBody != null) dictParams.Add("truncate_body", truncateBody);
 
-            return call_api_array(MethodBase.GetCurrentMethod().Name, new ArrayList { dictParams });
+            string method = MethodBase.GetCurrentMethod().Name;
+            if (!String.IsNullOrEmpty(api))
+                method = string.Format("{0}.{1}", api, method);
+
+            return call_api_array(method, new ArrayList { dictParams });
         }
         
         public JArray get_discussions_by_hot(string tag, int limit, ArrayList filterTags = null, ArrayList selectAuthors = null, ArrayList selectTags = null, bool? truncateBody = null)
@@ -311,6 +315,37 @@ namespace SteemAPI.CS
             if (truncateBody != null) dictParams.Add("truncate_body", truncateBody);
 
             return call_api_array(MethodBase.GetCurrentMethod().Name, new ArrayList { dictParams });
+        }
+
+        public JArray get_post_discussions_by_payout(string tag, int limit, ArrayList filterTags = null, ArrayList selectAuthors = null, ArrayList selectTags = null, bool? truncateBody = null)
+        {
+            var dictParams = new Dictionary<string, object>
+            {
+                { "tag", tag },
+                { "limit", limit }
+            };
+
+            if (filterTags != null) dictParams.Add("filter_tags", filterTags);
+            if (selectAuthors != null) dictParams.Add("select_authors", selectAuthors);
+            if (selectTags != null) dictParams.Add("select_tags", selectTags);
+            if (truncateBody != null) dictParams.Add("truncate_body", truncateBody);
+
+            return call_api_array(MethodBase.GetCurrentMethod().Name, new ArrayList { dictParams });
+        }
+
+        public JObject get_state(string path)
+        {
+            ArrayList arrParams = new ArrayList();
+            arrParams.Add(path);
+            return call_api(MethodBase.GetCurrentMethod().Name, arrParams);
+        }
+        
+        public JArray get_ops_in_block(long block_num, bool only_virtual = false)
+        {
+            ArrayList arrParams = new ArrayList();
+            arrParams.Add(block_num);
+            arrParams.Add(only_virtual);
+            return call_api_array(MethodBase.GetCurrentMethod().Name, arrParams);
         }
         #endregion
     }
