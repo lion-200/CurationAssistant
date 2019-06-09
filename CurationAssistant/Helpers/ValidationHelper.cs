@@ -20,7 +20,7 @@ namespace CurationAssistant.Helpers
             ValidationResultType resultType = ValidationResultType.Failure;
 
             var validationItem = new ValidationItemViewModel();
-            validationItem.Title = string.Format("Post creation date is > {0} minutes and < {1} hours", vars.PostCreatedAtMin, vars.PostCreatedAtMax / 60);
+            validationItem.Title = string.Format("Post creation date is >= {0} minutes and < {1} hours", vars.PostCreatedAtMin, vars.PostCreatedAtMax / 60);
             validationItem.Priority = prio;
             validationItem.PriorityDescription = prio.ToString();
             validationItem.OrderId = 10;
@@ -28,7 +28,7 @@ namespace CurationAssistant.Helpers
             var postCreatedDate = model.BlogPost.Details.created;
 
             // Check if the post creation date is between the required ranges
-            if (DateTime.Now > postCreatedDate.AddMinutes(vars.PostCreatedAtMin) &&
+            if (DateTime.Now >= postCreatedDate.AddMinutes(vars.PostCreatedAtMin) &&
                 DateTime.Now < postCreatedDate.AddMinutes(vars.PostCreatedAtMax))
             {
                 resultType = ValidationResultType.Success;
@@ -64,6 +64,7 @@ namespace CurationAssistant.Helpers
             decimal maxPayoutReceived = 0;
             double maxPayoutReceivedDays = 0;
 
+            // check if we have sufficient data to run the validation
             if (model.LastRetrievedPostDate > dateFrom)
             {
                 resultType = ValidationResultType.Neutral;
@@ -71,10 +72,12 @@ namespace CurationAssistant.Helpers
             }
             else
             {
+                // get posts within range
                 var posts = model.Posts.Where(x => x.CreatedAt >= dateFrom).ToList();                
 
                 if(posts != null && posts.Any())
                 {
+                    // get the post containing max value
                     var maxReceived = posts.OrderByDescending(x => x.PaidOutTotal).Take(1).FirstOrDefault();
 
                     if(maxReceived != null)
@@ -164,7 +167,7 @@ namespace CurationAssistant.Helpers
             }
             else
             {
-                if (model.Author.PendingPostPayout <= vars.TotalMaxPendingPayout)
+                if (model.Author.PendingPostPayout < vars.TotalMaxPendingPayout)
                 {
                     resultType = ValidationResultType.Success;
                 }
@@ -189,13 +192,13 @@ namespace CurationAssistant.Helpers
             ValidationResultType resultType = ValidationResultType.Failure;
 
             var validationItem = new ValidationItemViewModel();
-            validationItem.Title = string.Format("Author reputation is > {0} and < {1}", vars.AuthorRepMin, vars.AuthorRepMax);
+            validationItem.Title = string.Format("Author reputation is >= {0} and < {1}", vars.AuthorRepMin, vars.AuthorRepMax);
             validationItem.Priority = prio;
             validationItem.PriorityDescription = prio.ToString();
             validationItem.OrderId = 35;
                         
             // Check if the author rep value is within the required range
-            if (model.Author.ReputationCalculated > vars.AuthorRepMin &&
+            if (model.Author.ReputationCalculated >= vars.AuthorRepMin &&
                 model.Author.ReputationCalculated < vars.AuthorRepMax)
             {
                 resultType = ValidationResultType.Success;
@@ -266,7 +269,7 @@ namespace CurationAssistant.Helpers
             var dateCheck = DateTime.Now.AddDays(-vars.CommentsMinDays);
             var commentCount = model.Comments.Count(x => x.TimeStamp >= dateCheck);
 
-            if (commentCount > vars.CommentsMin)
+            if (commentCount >= vars.CommentsMin)
             {
                 resultType = ValidationResultType.Success;
                 validationItem.ResultMessage = string.Format("Author posted {0} comments in last {1} days.", commentCount, vars.CommentsMinDays);
@@ -305,7 +308,7 @@ namespace CurationAssistant.Helpers
             // get comments within range
             var vpCalculated = CalculationHelper.CalculateVotingManaPercentage(accountDetails);
 
-            if (vpCalculated > vars.VPMinRequired)
+            if (vpCalculated >= vars.VPMinRequired)
             {
                 resultType = ValidationResultType.Success;
                 validationItem.ResultMessage = string.Format("VP of account {0} is {1} %.", vars.UpvoteAccount, vpCalculated.ToString("N"));
