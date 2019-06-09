@@ -42,6 +42,7 @@ namespace CurationAssistant.Controllers
                 validationItems.Add(ValidationHelper.ValidatePostCreateDateRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidatePostMaxPendingPayoutRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidateTotalMaxPendingPayoutRule(model, vars));
+                validationItems.Add(ValidationHelper.ValidateMaxPostPayoutRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidateAuthorReputationRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidateMinPostsRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidateMinCommentsRule(model, vars));
@@ -92,6 +93,9 @@ namespace CurationAssistant.Controllers
                     // validate data
                     result.ValidationSummary = RunValidation(result, model.ValidationVariables);
                 }
+
+                // return only a subset of posts
+                result.Posts = result.Posts.Take(ConfigurationHelper.PostTransactionCount).ToList();
             }
             catch (Exception ex)
             {
@@ -205,11 +209,11 @@ namespace CurationAssistant.Controllers
                 // get posts
                 var posts = GetAccountPosts(accountName);
                 if (posts != null && posts.Any())
-                    result.LastRetrievedPostDate = posts.LastOrDefault().CreatedAt;
+                    result.LastRetrievedPostDate = posts.LastOrDefault().CreatedAt;                
 
                 result.Author.PendingPostPayout = CalculationHelper.CalculatePendingPostPayout(accountName, posts);
-                
-                result.Posts = posts.Take(ConfigurationHelper.PostTransactionCount).ToList();
+
+                result.Posts = posts;
 
                 var limit = Convert.ToInt32(ConfigurationHelper.HistoryTransactionLimit);
                 uint batchSize = 1000;

@@ -5,19 +5,30 @@
             <thead>
                 <tr>
                     <th scope="row" class="w-25">Date</th>
-                    <th scope="row" class="w-25 text-right">Pending payout / Paid out</th>
+                    <th scope="row" class="w-25 text-right">Payout values</th>
                     <th scope="row" class="w-25">Image</th>
                     <th scope="row" class="w-50">Title</th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: { data: Posts, as: 'post' }">
-                <tr>
+                <tr data-bind="attr: { class: post.PaidOut() > 0 ? 'table-secondary' : 'table-light' }">
                     <td>
                         <span data-bind="html: post.createDate()"></span><br />
                         <span class="small" data-bind="html: post.createDateDiff()"></span>
                     </td>
                     <td>
-                        <span class="float-right" data-bind="html: post.payoutDisplayComputed()"></span>                        
+                        <div class="row" data-bind="visible: post.PendingPayout() > 0">
+                            <div class="col-sm-8 text-right">Pending:</div>
+                            <div class="col-sm-4 text-right"><span data-bind="html: post.pendingPayoutComputed()"></span></div>
+                        </div>
+                        <div class="row" data-bind="visible: post.PaidOut() > 0">
+                            <div class="col-sm-8 text-right">Paid out author:</div>
+                            <div class="col-sm-4 text-right"><span data-bind="html: post.authorPayoutComputed()"></span></div>
+                        </div>
+                        <div class="row" data-bind="visible: post.PaidOutTotal() > 0">
+                            <div class="col-sm-8 text-right">Paid out total:</div>
+                            <div class="col-sm-4 text-right"><span data-bind="html: post.totalPayoutComputed()"></span></div>
+                        </div>                        
                         <!-- ko if: post.IsResteem() -->
                         <div class="float-right">
                             <i class="fas fa-redo"></i><span> resteemed</span>

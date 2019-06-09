@@ -44,6 +44,31 @@
             <div class="row">
                 <div class="col-sm-4">
                     <label>
+                        Max received payout for a post<br />
+                        <small>(in $ / created within x days)</small>
+                    </label>
+                </div>
+                <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.MaxPostPayoutAmount, new { @class = "form-control", placeholder = "$ max post payout", aria_label = "$ max post payout" })</div>
+                <div class="col-sm-4">
+                    <select name="ValidationVariables.PostsMinDays" class="form-control">
+                        @for (var i = 1; i <= CurationAssistant.Helpers.ConfigurationHelper.PostsMinDaysUntil; i++)
+                        {
+                            if (i == Model.ValidationVariables.MaxPostPayoutDays)
+                            {
+                                @Html.Raw(string.Format("<option value={0} selected>{0}</option>", i));
+                            }
+                            else
+                            {
+                                @Html.Raw(string.Format("<option value={0}>{0}</option>", i));
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-sm-4">
+                    <label>
                         Author reputation range<br />
                         <small>(min / max)</small>
                     </label>

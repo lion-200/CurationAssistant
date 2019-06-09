@@ -19,6 +19,8 @@ namespace CurationAssistant.Models
         public string UpvoteAccount { get; set; }
         public decimal VPMinRequired { get; set; }
         public decimal TotalMaxPendingPayout { get; set; }
+        public decimal MaxPostPayoutAmount { get; set; }
+        public int MaxPostPayoutDays { get; set; }
 
         public ValidationVariables()
         {
@@ -34,6 +36,8 @@ namespace CurationAssistant.Models
             UpvoteAccount = "curie";
             VPMinRequired = 88;
             TotalMaxPendingPayout = 10;
+            MaxPostPayoutAmount = 10;
+            MaxPostPayoutDays = 21;
         }
     }
 }

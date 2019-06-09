@@ -237,8 +237,24 @@ function DiscussionListViewModel(data, parent) {
         return postLink;
     });
 
-    self.payoutDisplayComputed = ko.computed(function () {
-        var displayValue = '$' + self.PendingPayout() + ' / $' + self.PaidOut();
+    self.pendingPayoutComputed = ko.computed(function () {
+        var displayValue = '$' + self.PendingPayout()
+        if (self.IsResteem())
+            displayValue = "";
+
+        return displayValue;
+    });
+
+    self.authorPayoutComputed = ko.computed(function () {
+        var displayValue = '$' + self.PaidOut()
+        if (self.IsResteem())
+            displayValue = "";
+
+        return displayValue;
+    });
+
+    self.totalPayoutComputed = ko.computed(function () {
+        var displayValue = '$' + self.PaidOutTotal()
         if (self.IsResteem())
             displayValue = "";
 

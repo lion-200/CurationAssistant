@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steem Curation Assistant by @Html.Raw("@lion200")</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link rel="icon" href="@Url.Content("~/Content/Images/favicon.ico")" />
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/json2html/1.2.0/json2html.min.js"></script>
-    
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-50878479-5"></script>
     <script>
@@ -20,24 +21,10 @@
     </script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-dark fixed-top bg-dark">
+    <nav class="navbar navbar-expand-sm navbar-dark fixed-top bg-light">
         <div class="container">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"></button>
-            <a class="navbar-brand" href="/">Steem Curation Assistant</a>
-            <div class="navbar-collapse collapse" id="navbarSupportedContent">
-                <ul class="nav navbar-nav mr-auto">
-                    @*<li class="nav-item"><a href="/" class="nav-link">Home</a></li>
-                        <li class="nav-item"><a href="/Home/Followers" class="nav-link">Followers</a></li>
-                        <li class="nav-item"><a href="/Home/Following" class="nav-link">Following</a></li>*@
-                    @*<li class="nav-item"><a href="/Home/Contact" class="nav-link">Contact</a></li>*@
-                </ul>
-
-                <ul class="nav navbar-nav navbar-right mr-auto">
-                    @*<li class="nav-item"><a href="/Account/Register" id="registerLink" class="nav-link">Register</a></li>
-                        <li class="nav-item"><a href="/Account/Login" id="loginLink" class="nav-link">Log in</a></li>*@
-                </ul>
-
-            </div>
+            <a class="navbar-brand" href="/"><img src="~/Content/Images/logo-trans-hor.png" alt="Steem Curation Assistant" width="250" /></a>            
         </div>
     </nav>
 

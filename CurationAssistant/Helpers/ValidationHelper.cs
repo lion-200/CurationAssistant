@@ -23,7 +23,7 @@ namespace CurationAssistant.Helpers
             validationItem.Title = string.Format("Post creation date is > {0} minutes and < {1} hours", vars.PostCreatedAtMin, vars.PostCreatedAtMax / 60);
             validationItem.Priority = prio;
             validationItem.PriorityDescription = prio.ToString();
-            validationItem.OrderId = 1;
+            validationItem.OrderId = 10;
 
             var postCreatedDate = model.BlogPost.Details.created;
 
@@ -47,6 +47,62 @@ namespace CurationAssistant.Helpers
             return validationItem;
         }
 
+        public static ValidationItemViewModel ValidateMaxPostPayoutRule(CurationDetailsViewModel model, ValidationVariables vars)
+        {
+            var validationItem = new ValidationItemViewModel();
+
+            ValidationPriority prio = ValidationPriority.High;
+            ValidationResultType resultType = ValidationResultType.Failure;
+
+            validationItem.Title = string.Format("Max post payout <= {0} for posts created within {1} days", vars.MaxPostPayoutAmount, vars.MaxPostPayoutDays);
+            validationItem.Priority = prio;
+            validationItem.PriorityDescription = prio.ToString();
+            validationItem.OrderId = 20;
+
+            // get posts within given range in MaxReceivedPayoutDays
+            var dateFrom = DateTime.Now.AddDays(-vars.MaxPostPayoutDays);
+            decimal maxPayoutReceived = 0;
+            double maxPayoutReceivedDays = 0;
+
+            if (model.LastRetrievedPostDate > dateFrom)
+            {
+                resultType = ValidationResultType.Neutral;
+                validationItem.ResultMessage = string.Format(Resources.General.DataSetInsufficientWarning, model.LastRetrievedPostDate.ToString("yyyy-MM-dd HH:mm"));
+            }
+            else
+            {
+                var posts = model.Posts.Where(x => x.CreatedAt >= dateFrom).ToList();                
+
+                if(posts != null && posts.Any())
+                {
+                    var maxReceived = posts.OrderByDescending(x => x.PaidOutTotal).Take(1).FirstOrDefault();
+
+                    if(maxReceived != null)
+                    {
+                        maxPayoutReceived = maxReceived.PaidOutTotal;
+                        maxPayoutReceivedDays = Math.Floor(DateTime.Now.Subtract(maxReceived.CreatedAt).TotalDays);
+                    }
+                }
+
+                if (maxPayoutReceived > 0 && maxPayoutReceived <= vars.MaxPostPayoutAmount)
+                {
+                    resultType = ValidationResultType.Success;
+                }
+                else
+                {
+                    resultType = ValidationResultType.Failure;
+                }                
+            }
+                       
+            validationItem.ResultType = resultType;
+            validationItem.ResultTypeDescription = resultType.ToString();
+
+            if (String.IsNullOrEmpty(validationItem.ResultMessage))
+                validationItem.ResultMessage = string.Format("${0} is the highest payout for a post created {1} days ago", maxPayoutReceived.ToString("N"), maxPayoutReceivedDays);
+
+            return validationItem;
+        }
+
         public static ValidationItemViewModel ValidatePostMaxPendingPayoutRule(CurationDetailsViewModel model, ValidationVariables vars)
         {
             var validationItem = new ValidationItemViewModel();
@@ -57,7 +113,7 @@ namespace CurationAssistant.Helpers
             validationItem.Title = string.Format("Post max pending payout value < {0}", vars.PostMaxPendingPayout);
             validationItem.Priority = prio;
             validationItem.PriorityDescription = prio.ToString();
-            validationItem.OrderId = 2;
+            validationItem.OrderId = 25;
 
             decimal postPendingPayoutValue = 0;
             var postPendingPayoutString = model.BlogPost.Details.pending_payout_value.Replace("SBD", "").Trim();
@@ -91,7 +147,7 @@ namespace CurationAssistant.Helpers
             validationItem.Title = string.Format("Total max pending payout value < {0}", vars.TotalMaxPendingPayout);
             validationItem.Priority = prio;
             validationItem.PriorityDescription = prio.ToString();
-            validationItem.OrderId = 3;            
+            validationItem.OrderId = 30;            
             
             // if the oldest post retrieved is a more recent post than 1 week before current date, we don't have enough data to validate this rule
             var dateCheck = DateTime.Now.AddDays(-7);
@@ -103,7 +159,7 @@ namespace CurationAssistant.Helpers
                 } else
                 {
                     resultType = ValidationResultType.Neutral;
-                    validationItem.ResultMessage = string.Format("Dataset retrieved does not contain enough data to validate this rule. Oldest retrieved post date in data set is {0}", model.LastRetrievedPostDate.ToString("yyyy-MM-dd HH:mm"));
+                    validationItem.ResultMessage = string.Format(Resources.General.DataSetInsufficientWarning, model.LastRetrievedPostDate.ToString("yyyy-MM-dd HH:mm"));
                 }
             }
             else
@@ -136,7 +192,7 @@ namespace CurationAssistant.Helpers
             validationItem.Title = string.Format("Author reputation is > {0} and < {1}", vars.AuthorRepMin, vars.AuthorRepMax);
             validationItem.Priority = prio;
             validationItem.PriorityDescription = prio.ToString();
-            validationItem.OrderId = 3;
+            validationItem.OrderId = 35;
                         
             // Check if the author rep value is within the required range
             if (model.Author.ReputationCalculated > vars.AuthorRepMin &&
@@ -165,7 +221,7 @@ namespace CurationAssistant.Helpers
             validationItem.Title = string.Format("Required minimum # posts {0} in last {1} days", vars.PostsMin, vars.PostsMinDays);
             validationItem.Priority = prio;
             validationItem.PriorityDescription = prio.ToString();
-            validationItem.OrderId = 4;
+            validationItem.OrderId = 40;
 
             // get posts within range
             var dateCheck = DateTime.Now.AddDays(-vars.PostsMinDays);
@@ -181,7 +237,7 @@ namespace CurationAssistant.Helpers
                 if(model.LastTransactionDate > dateCheck)
                 {
                     resultType = ValidationResultType.Neutral;
-                    validationItem.ResultMessage = string.Format("Dataset retrieved does not contain enough data to validate this rule. Oldest transaction date in data set is {0}", model.LastTransactionDate.ToString("yyyy-MM-dd HH:mm"));
+                    validationItem.ResultMessage = string.Format(Resources.General.DataSetInsufficientWarning, model.LastTransactionDate.ToString("yyyy-MM-dd HH:mm"));
                 } else
                 {
                     resultType = ValidationResultType.Failure;
@@ -204,7 +260,7 @@ namespace CurationAssistant.Helpers
             validationItem.Title = string.Format("Required minimum # comments {0} in last {1} days", vars.CommentsMin, vars.CommentsMinDays);
             validationItem.Priority = prio;
             validationItem.PriorityDescription = prio.ToString();
-            validationItem.OrderId = 5;
+            validationItem.OrderId = 50;
 
             // get comments within range
             var dateCheck = DateTime.Now.AddDays(-vars.CommentsMinDays);
@@ -220,7 +276,7 @@ namespace CurationAssistant.Helpers
                 if (model.LastTransactionDate > dateCheck)
                 {
                     resultType = ValidationResultType.Neutral;
-                    validationItem.ResultMessage = string.Format("Dataset retrieved does not contain enough data to validate this rule. Oldest transaction date in data set is {0}", model.LastTransactionDate.ToString("yyyy-MM-dd HH:mm"));
+                    validationItem.ResultMessage = string.Format(Resources.General.DataSetInsufficientWarning, model.LastTransactionDate.ToString("yyyy-MM-dd HH:mm"));
                 }
                 else
                 {
@@ -244,7 +300,7 @@ namespace CurationAssistant.Helpers
             validationItem.Title = string.Format("Minimum required VP for account {0} is {1} %", vars.UpvoteAccount, vars.VPMinRequired);
             validationItem.Priority = prio;
             validationItem.PriorityDescription = prio.ToString();
-            validationItem.OrderId = 6;
+            validationItem.OrderId = 60;
 
             // get comments within range
             var vpCalculated = CalculationHelper.CalculateVotingManaPercentage(accountDetails);

@@ -11,9 +11,11 @@ namespace CurationAssistant.Models.TransactionHistory
         public string ParentPermlink { get; set; }
         public decimal PendingPayout { get; set; }
         public decimal PaidOut { get; set; }
+        public decimal PaidOutTotal { get; set; }
         public string Title { get; set; }
         public string MainImage { get; set; }        
         public DateTime CreatedAt { get; set; }
+        public DateTime PostPayoutDate { get; set; }
         public string Author { get; set; }
         public bool IsResteem { get; set; }
     }

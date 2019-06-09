@@ -36,13 +36,15 @@ namespace CurationAssistant.Mappers
                 if (output.PendingPayout == 0)
                 {
                     output.PaidOut = CalculationHelper.ParsePayout(input.total_payout_value);
+                    output.PaidOutTotal = output.PaidOut + CalculationHelper.ParsePayout(input.curator_payout_value);
                 }
             }
 
             output.Permlink = input.permlink;
             output.ParentPermlink = input.parent_permlink;
             output.Title = input.title;
-            output.CreatedAt = input.created;            
+            output.CreatedAt = input.created;
+            output.PostPayoutDate = output.CreatedAt.AddDays(7);
 
             return output;
         }

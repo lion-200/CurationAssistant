@@ -133,6 +133,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_GlobalResources\General.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>General.resx</DependentUpon>
+    </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -172,6 +177,10 @@
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\favicon.ico" />
+    <Content Include="Content\Images\logo-trans-hor.png" />
+    <Content Include="Content\Images\logo.png" />
+    <Content Include="Content\Images\logo_transparent.png" />
     <Content Include="Content\jquery.loading.css" />
     <Content Include="Content\jquery.loading.min.css" />
     <Content Include="favicon.ico" />
@@ -272,6 +281,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\General.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>General.Designer.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
