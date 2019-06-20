@@ -45,10 +45,13 @@ namespace CurationAssistant.Controllers
                 validationItems.Add(ValidationHelper.ValidateMaxPostPayoutRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidateAuthorReputationRule(model, vars));
                 validationItems.Add(ValidationHelper.ValidateMinPostsRule(model, vars));
-                validationItems.Add(ValidationHelper.ValidateMinCommentsRule(model, vars));
+                validationItems.Add(ValidationHelper.ValidateMinCommentsRule(model, vars));                
 
                 var upvoteAccountDetails = GetAccountDetails(vars.UpvoteAccount.Replace("@", ""));
                 validationItems.Add(ValidationHelper.ValidateUpvoteAccountMinVPRule(upvoteAccountDetails, vars));
+
+                var upvoteAccountVoteModel = GetLastUpvoteFromUpvoteAccountToAuthor(vars.UpvoteAccount, model.Author.Details.name, 2000);
+                validationItems.Add(ValidationHelper.ValidateMinDaysSinceLastUpvoteFromUpvoteAccount(model.Author.Details.name, upvoteAccountVoteModel, vars));
             }
             catch (Exception ex)
             {
@@ -58,6 +61,87 @@ namespace CurationAssistant.Controllers
             result.Items = validationItems;
 
             return result;
+        }
+
+        private GetAccountVotesViewModel GetLastUpvoteFromUpvoteAccountToAuthor(string voter, string author, int voteLimit)
+        {
+            var model = new GetAccountVotesViewModel();
+            
+            uint batchSize = 1000;
+            var start = -1;
+
+            var limit = Convert.ToInt32(ConfigurationHelper.VoteHistoryTransactionLimit);
+            int transactionsRetrieved = 0;
+            int voteCount = 0;
+            log.Info(string.Format("Votes.Batchsize: {0}", batchSize));
+
+            using (var csteemd = new CSteemd(ConfigurationHelper.HostName))
+            {                
+                // stop if the max amount of transactions are reached!
+                while (transactionsRetrieved < limit)
+                {
+                    log.Info(string.Format("Votes.TransactionsReceived: {0}", transactionsRetrieved));
+                    log.Info(string.Format("Votes.Votecount: {0}", voteCount));
+
+                    var responseHistory = csteemd.get_account_history(voter, start, batchSize);
+
+                    // store last transaction datetime, so that we know until what data time value we got the transactions
+                    model.LastTransactionDate = responseHistory[0][1]["timestamp"].ToObject<DateTime>();
+
+                    var totalCount = responseHistory.Count();
+                    // get_account_history returns last result first, but we want most recent first, so we start from the last element of the response to loop
+                    for (var i = totalCount - 1; i >= 0; i--)
+                    {
+                        var el = responseHistory[i];
+
+                        // get the index of the last transaction in the list to make the next call start from this index
+                        if (transactionsRetrieved == 0)
+                        {
+                            var firstIndex = el[0].ToString();
+                            Int32.TryParse(firstIndex, out start);
+                        }
+
+                        var transaction = el[1].ToObject<TransactionModel>();
+
+                        var operation = el[1]["op"];
+                        var operationType = operation[0].ToString();
+
+                        var actionViewModel = new ActionViewModel();
+                        actionViewModel.TimeStamp = el[1]["timestamp"].ToObject<DateTime>();
+                        if (operationType == "vote" && voteCount < voteLimit)
+                        {
+                            var operationModel = operation[1].ToObject<OperationVoteViewModel>();
+
+                            if (operationModel.voter == voter)
+                            {
+                                actionViewModel.Type = "vote";
+                                actionViewModel.Details = operationModel;
+
+                                if(operationModel.author == author)
+                                {
+                                    model.LastVote = actionViewModel;
+                                    break;
+                                }
+
+                                voteCount++;
+                            }
+                        }
+
+                        // if the required amount of counts are reached, stop
+                        if (voteCount == voteLimit)
+                        {
+                            break;
+                        }
+                    }
+
+                    transactionsRetrieved += (int)batchSize;
+                    start -= (int)batchSize;
+                }
+            }
+
+            model.VotesAnalyzed = voteCount;
+
+            return model;
         }
 
         /// <summary>
