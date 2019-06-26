@@ -1,0 +1,14 @@
+Version: draft
+Date: 26-06-2019
+----------------
+- Added ChangeLog file to keep track of changes
+- Created CurationAssistant.Data class library to separate data elements retrieved from underlying hivemind db and web project
+- Renamed CurationAssistant project to CurationAssistant.Web
+- Added Npgsql to connect with an underlying hivemind Postgresql database
+- Created Hivemind database table entities in Data project under Models
+- Configured the connection with the hivemind database
+
+Version: 1.0
+Date: 26-06-2019
+----------------
+- Moved the API-based solution to branch 1.0

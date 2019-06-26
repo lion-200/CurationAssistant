@@ -3,9 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurationAssistant", "CurationAssistant\CurationAssistant.csproj", "{E7046C02-20BB-47D3-9974-C211CCFA50BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurationAssistant.Web", "CurationAssistant\CurationAssistant.Web.csproj", "{E7046C02-20BB-47D3-9974-C211CCFA50BD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steem.NET", "Steem.NET\Steem.NET.csproj", "{7C243D22-F475-4A68-A93F-E2E16CE97EA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurationAssistant.Data", "CurationAssistant.Data\CurationAssistant.Data.csproj", "{31A21EA6-8557-44DC-832D-C25931F5456B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{0CE4EE21-EFC7-4BA1-8ACE-9CBE0C7ED98C}"
+	ProjectSection(SolutionItems) = preProject
+		ChangeLog.txt = ChangeLog.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +28,10 @@ Global
 		{7C243D22-F475-4A68-A93F-E2E16CE97EA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C243D22-F475-4A68-A93F-E2E16CE97EA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C243D22-F475-4A68-A93F-E2E16CE97EA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31A21EA6-8557-44DC-832D-C25931F5456B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31A21EA6-8557-44DC-832D-C25931F5456B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31A21EA6-8557-44DC-832D-C25931F5456B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31A21EA6-8557-44DC-832D-C25931F5456B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
