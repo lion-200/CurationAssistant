@@ -1,4 +1,13 @@
 Version: draft
+Date: 27-06-2019
+----------------
+- Created an extra layer for handling logic: CurationAssistant.Service
+- Service classes & interfaces defined to hold entity (or grouped entities) specific logic
+- DTO classes created for corresponding DB Entities
+- AutoMapper added & configured 
+- Unity added for Dependency Injection
+
+Version: draft
 Date: 26-06-2019
 ----------------
 - Added ChangeLog file to keep track of changes

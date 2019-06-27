@@ -1,9 +1,11 @@
-﻿using CurationAssistant.Helpers;
+﻿using AutoMapper;
+using CurationAssistant.Helpers;
 using CurationAssistant.Mappers;
 using CurationAssistant.Models;
 using CurationAssistant.Models.SteemModels;
 using CurationAssistant.Models.SteemModels.Partials;
 using CurationAssistant.Models.TransactionHistory;
+using CurationAssistant.Service.ServiceInterfaces;
 using Newtonsoft.Json;
 using SteemAPI.CS;
 using System;
@@ -18,9 +20,17 @@ namespace CurationAssistant.Controllers
     public class HomeController : Controller
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(HomeController));
+        private readonly IBlockService _blockService;        
+
+        public HomeController(IBlockService blockService)
+        {            
+            _blockService = blockService;
+        }
 
         public ActionResult Index()
         {
+            var block = _blockService.GetMostRecentBlock();
+
             var model = new HomeViewModel();
 
             return View(model);

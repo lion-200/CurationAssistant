@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CurationAssistant.Data
 {
-    class HiveContext : DbContext
+    public class HiveContext : DbContext
     {
         public HiveContext() : base(nameOrConnectionString: "Default") { }
 
