@@ -21,6 +21,7 @@ namespace CurationAssistant.Models
         public decimal TotalMaxPendingPayout { get; set; }
         public decimal MaxPostPayoutAmount { get; set; }
         public int MaxPostPayoutDays { get; set; }
+        public int MinDaysLastUpvoteFromUpvoteAccount { get; set; }
 
         public ValidationVariables()
         {
@@ -38,6 +39,7 @@ namespace CurationAssistant.Models
             TotalMaxPendingPayout = 10;
             MaxPostPayoutAmount = 10;
             MaxPostPayoutDays = 21;
+            MinDaysLastUpvoteFromUpvoteAccount = 21;
         }
     }
 }

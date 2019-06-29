@@ -229,6 +229,7 @@
     <Compile Include="Models\SteemModels\Partials\DiscussionJsonMetadata.cs" />
     <Compile Include="Models\SteemModels\Partials\TransactionModel.cs" />
     <Compile Include="Models\TransactionHistory\DiscussionListViewModel.cs" />
+    <Compile Include="Models\TransactionHistory\GetAccountVotesViewModel.cs" />
     <Compile Include="Models\ValidationItemViewModel.cs" />
     <Compile Include="Models\ValidationSummaryViewModel.cs" />
     <Compile Include="Models\ValidationVariables.cs" />

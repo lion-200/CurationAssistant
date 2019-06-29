@@ -55,11 +55,11 @@
                         {
                             if (i == Model.ValidationVariables.MaxPostPayoutDays)
                             {
-                                @Html.Raw(string.Format("<option value={0} selected>{0}</option>", i));
+                                @Html.Raw(string.Format("<option value={0} selected>{0} days</option>", i));
                             }
                             else
                             {
-                                @Html.Raw(string.Format("<option value={0}>{0}</option>", i));
+                                @Html.Raw(string.Format("<option value={0}>{0} days</option>", i));
                             }
                         }
                     </select>
@@ -91,11 +91,11 @@
                         {
                             if (i == Model.ValidationVariables.PostsMinDays)
                             {
-                                @Html.Raw(string.Format("<option value={0} selected>{0}</option>", i));
+                                @Html.Raw(string.Format("<option value={0} selected>{0} days</option>", i));
                             }
                             else
                             {
-                                @Html.Raw(string.Format("<option value={0}>{0}</option>", i));
+                                @Html.Raw(string.Format("<option value={0}>{0} days</option>", i));
                             }
                         }
                     </select>
@@ -116,11 +116,11 @@
                         {
                             if (i == Model.ValidationVariables.CommentsMinDays)
                             {
-                                @Html.Raw(string.Format("<option value={0} selected>{0}</option>", i));
+                                @Html.Raw(string.Format("<option value={0} selected>{0} days</option>", i));
                             }
                             else
                             {
-                                @Html.Raw(string.Format("<option value={0}>{0}</option>", i));
+                                @Html.Raw(string.Format("<option value={0}>{0} days</option>", i));
                             }
                         }
                     </select>
@@ -136,6 +136,30 @@
                 </div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.UpvoteAccount, new { @class = "form-control", placeholder = "Account name", aria_label = "Account name" })</div>
                 <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.VPMinRequired, new { @class = "form-control", placeholder = "Min VP %", aria_label = "Min VP %" })</div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-sm-4">
+                    <label>
+                        Minimum # days after last upvote from Upvote account                        
+                    </label>
+                </div>
+                <div class="col-sm-4">
+                    <select name="ValidationVariables.MinDaysLastUpvoteFromUpvoteAccount" class="form-control">
+                        @for (var i = 1; i <= CurationAssistant.Helpers.ConfigurationHelper.UpvoteMinDaysUntil; i++)
+                        {
+                            if (i == Model.ValidationVariables.MinDaysLastUpvoteFromUpvoteAccount)
+                            {
+                                @Html.Raw(string.Format("<option value={0} selected>{0} days</option>", i));
+                            }
+                            else
+                            {
+                                @Html.Raw(string.Format("<option value={0}>{0} days</option>", i));
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-4"></div>
             </div>
         </div>
     </div>

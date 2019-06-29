@@ -37,11 +37,29 @@ namespace CurationAssistant.Helpers
             }
         }
 
+        public static int UpvoteMinDaysUntil
+        {
+            get
+            {
+                var val = ConfigurationManager.AppSettings["UpvoteMinDaysUntil"];
+                return Int32.Parse(val);
+            }
+        }
+
         public static int HistoryTransactionLimit
         {
             get
             {
                 var val = ConfigurationManager.AppSettings["HistoryTransactionLimit"];
+                return Int32.Parse(val);
+            }
+        }
+
+        public static int VoteHistoryTransactionLimit
+        {
+            get
+            {
+                var val = ConfigurationManager.AppSettings["VoteHistoryTransactionLimit"];
                 return Int32.Parse(val);
             }
         }

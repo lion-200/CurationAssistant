@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using CurationAssistant.Models.SteemModels;
+using CurationAssistant.Models.TransactionHistory;
 
 namespace CurationAssistant.Helpers
 {
@@ -102,6 +103,54 @@ namespace CurationAssistant.Helpers
 
             if (String.IsNullOrEmpty(validationItem.ResultMessage))
                 validationItem.ResultMessage = string.Format("${0} is the highest payout for a post created {1} days ago", maxPayoutReceived.ToString("N"), maxPayoutReceivedDays);
+
+            return validationItem;
+        }
+
+        public static ValidationItemViewModel ValidateMinDaysSinceLastUpvoteFromUpvoteAccount(string author, GetAccountVotesViewModel model, ValidationVariables vars)
+        {
+            var validationItem = new ValidationItemViewModel();
+
+            ValidationPriority prio = ValidationPriority.High;
+            ValidationResultType resultType = ValidationResultType.Failure;
+
+            validationItem.Title = string.Format("Min amount of days after the last upvote from {0} to {1} >= {2}", vars.UpvoteAccount, author, vars.MinDaysLastUpvoteFromUpvoteAccount);
+            validationItem.Priority = prio;
+            validationItem.PriorityDescription = prio.ToString();
+            validationItem.OrderId = 60;
+
+            var dateFrom = DateTime.Now.AddDays(-vars.MinDaysLastUpvoteFromUpvoteAccount);
+
+            if (model.LastVote != null && model.LastVote.TimeStamp > dateFrom)
+            {
+                resultType = ValidationResultType.Failure;
+
+                var dateDiffDays = DateTime.Now.Subtract(model.LastVote.TimeStamp).TotalDays;
+                validationItem.ResultMessage = string.Format("Last received upvote from {0} to {1} is {2} days ago", vars.UpvoteAccount, author, dateDiffDays.ToString("N"));
+            }
+            else if (model.LastTransactionDate > dateFrom)
+            {
+                resultType = ValidationResultType.Neutral;
+                validationItem.ResultMessage = string.Format(Resources.General.DataSetInsufficientWarning, model.LastTransactionDate.ToString("yyyy-MM-dd HH:mm"));
+            }
+            else
+            {
+                resultType = ValidationResultType.Success;
+
+                if (model.LastVote == null)
+                {
+                    var dateDiffDays = DateTime.Now.Subtract(model.LastTransactionDate).TotalDays;
+                    validationItem.ResultMessage = string.Format("Author {0} didn't receive any upvote from {1} in the past {2} days.", author, vars.UpvoteAccount, dateDiffDays.ToString("N"));
+                }
+                else
+                {
+                    var dateDiffDays = DateTime.Now.Subtract(model.LastVote.TimeStamp).TotalDays;
+                    validationItem.ResultMessage = string.Format("Last received upvote from {0} to {1} is {2} days ago", vars.UpvoteAccount, author, dateDiffDays.ToString("N"));
+                }
+            }
+            
+            validationItem.ResultType = resultType;
+            validationItem.ResultTypeDescription = resultType.ToString();            
 
             return validationItem;
         }
