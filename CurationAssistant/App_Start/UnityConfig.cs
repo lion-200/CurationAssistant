@@ -27,7 +27,7 @@ namespace CurationAssistant
             container.RegisterType<IModLogService, ModLogService>();
             container.RegisterType<IPaymentService, PaymentService>();
             container.RegisterType<IPostService, PostService>();
-            container.RegisterType<IStateService, StateService>();
+            container.RegisterType<IStateService, StateService>();            
 
             // AutoMapper start
             var config = new MapperConfiguration(cfg =>

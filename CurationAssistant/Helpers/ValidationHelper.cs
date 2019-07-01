@@ -114,38 +114,31 @@ namespace CurationAssistant.Helpers
             ValidationPriority prio = ValidationPriority.High;
             ValidationResultType resultType = ValidationResultType.Failure;
 
-            validationItem.Title = string.Format("Min amount of days after the last upvote from {0} to {1} >= {2}", vars.UpvoteAccount, author, vars.MinDaysLastUpvoteFromUpvoteAccount);
+            validationItem.Title = string.Format("Min amount of days after the last upvote from {0} to {1} >= {2} with percentage >= {3}", vars.UpvoteAccount, author, vars.MinDaysLastUpvoteFromUpvoteAccount, vars.MinPercentageUpvoteFromUpvoteAccount);
             validationItem.Priority = prio;
             validationItem.PriorityDescription = prio.ToString();
             validationItem.OrderId = 60;
 
             var dateFrom = DateTime.Now.AddDays(-vars.MinDaysLastUpvoteFromUpvoteAccount);
 
-            if (model.LastVote != null && model.LastVote.TimeStamp > dateFrom)
+            if (model.MostRecentUpvote != null && model.MostRecentUpvote.last_update > dateFrom)
             {
                 resultType = ValidationResultType.Failure;
 
-                var dateDiffDays = DateTime.Now.Subtract(model.LastVote.TimeStamp).TotalDays;
+                var dateDiffDays = DateTime.Now.Subtract(model.MostRecentUpvote.last_update).TotalDays;
                 validationItem.ResultMessage = string.Format("Last received upvote from {0} to {1} is {2} days ago", vars.UpvoteAccount, author, dateDiffDays.ToString("N"));
-            }
-            else if (model.LastTransactionDate > dateFrom)
-            {
-                resultType = ValidationResultType.Neutral;
-                validationItem.ResultMessage = string.Format(Resources.General.DataSetInsufficientWarning, model.LastTransactionDate.ToString("yyyy-MM-dd HH:mm"));
             }
             else
             {
                 resultType = ValidationResultType.Success;
 
-                if (model.LastVote == null)
+                if (model.MostRecentUpvote != null)
+                { 
+                    var dateDiffDays = DateTime.Now.Subtract(model.MostRecentUpvote.last_update).TotalDays;
+                    validationItem.ResultMessage = string.Format("Last received upvote from {0} to {1} is {2} days ago with {3} %", vars.UpvoteAccount, author, dateDiffDays.ToString("N"), (model.MostRecentUpvote.vote_percent / 100).ToString("N"));
+                } else
                 {
-                    var dateDiffDays = DateTime.Now.Subtract(model.LastTransactionDate).TotalDays;
-                    validationItem.ResultMessage = string.Format("Author {0} didn't receive any upvote from {1} in the past {2} days.", author, vars.UpvoteAccount, dateDiffDays.ToString("N"));
-                }
-                else
-                {
-                    var dateDiffDays = DateTime.Now.Subtract(model.LastVote.TimeStamp).TotalDays;
-                    validationItem.ResultMessage = string.Format("Last received upvote from {0} to {1} is {2} days ago", vars.UpvoteAccount, author, dateDiffDays.ToString("N"));
+                    validationItem.ResultMessage = string.Format("Author {0} never received a vote from {1}", author, vars.UpvoteAccount);
                 }
             }
             

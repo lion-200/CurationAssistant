@@ -90,5 +90,14 @@ namespace CurationAssistant.Helpers
                 return Int32.Parse(val);
             }
         }
+
+        public static int RetrieveUpvoteAccountVoteCount
+        {
+            get
+            {
+                var val = ConfigurationManager.AppSettings["RetrieveUpvoteAccountVoteCount"];
+                return Int32.Parse(val);
+            }
+        }
     }
 }

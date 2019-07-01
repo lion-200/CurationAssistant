@@ -1,4 +1,17 @@
 Version: draft
+Date: 01-07-2019
+----------------
+- Popper.js reference added to BundleConfig for tooltip display
+- NEW Validation rule added: Min days since last upvote from upvote account  (x days / > y percentage)
+- Old code for the new validation rule transformed to make use of Hivemind & Steem API combination
+- Get last x upvotes from upvote account to display (Web.config variable RetrieveUpvoteAccountVoteCount)
+- New call to Steem API implemented: find_votes
+- Validation variables added for new validation rule
+- Author details section extended with Most Recent upvotes from upvote account
+- All hivemind tables added to HiveContext 
+
+
+Version: draft
 Date: 27-06-2019
 ----------------
 - Created an extra layer for handling logic: CurationAssistant.Service

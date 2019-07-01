@@ -45,6 +45,12 @@
                 <th scope="row">Pending payout (posts)</th>
                 <td><span data-bind="text: '$' + Author().PendingPostPayout()"></span></td>
             </tr>
+            <tr>
+                <th scope="row">Most recent upvote account votes</th>
+                <td>
+                    @Html.Partial("_UpvoteAccountVotes")
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>

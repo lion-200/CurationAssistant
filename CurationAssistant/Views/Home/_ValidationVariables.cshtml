@@ -141,7 +141,8 @@
             <div class="row">
                 <div class="col-sm-4">
                     <label>
-                        Minimum # days after last upvote from Upvote account                        
+                        Last upvote from Upvote account<br />   
+                        <small>(Min # days ago with > x%)</small>
                     </label>
                 </div>
                 <div class="col-sm-4">
@@ -157,9 +158,9 @@
                                 @Html.Raw(string.Format("<option value={0}>{0} days</option>", i));
                             }
                         }
-                    </select>
+                    </select>                    
                 </div>
-                <div class="col-sm-4"></div>
+                <div class="col-sm-4">@Html.TextBoxFor(x => x.ValidationVariables.MinPercentageUpvoteFromUpvoteAccount, new { @class = "form-control", placeholder = "Min %", aria_label = "Min %" })</div>
             </div>
         </div>
     </div>

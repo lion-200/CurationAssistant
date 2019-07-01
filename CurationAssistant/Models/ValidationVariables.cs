@@ -22,6 +22,7 @@ namespace CurationAssistant.Models
         public decimal MaxPostPayoutAmount { get; set; }
         public int MaxPostPayoutDays { get; set; }
         public int MinDaysLastUpvoteFromUpvoteAccount { get; set; }
+        public int MinPercentageUpvoteFromUpvoteAccount { get; set; }
 
         public ValidationVariables()
         {
@@ -40,6 +41,7 @@ namespace CurationAssistant.Models
             MaxPostPayoutAmount = 10;
             MaxPostPayoutDays = 21;
             MinDaysLastUpvoteFromUpvoteAccount = 21;
+            MinPercentageUpvoteFromUpvoteAccount = 30;
         }
     }
 }

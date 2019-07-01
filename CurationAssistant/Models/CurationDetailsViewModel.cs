@@ -14,6 +14,7 @@ namespace CurationAssistant.Models
         public List<ActionViewModel> Comments { get; set; }
         public List<DiscussionListViewModel> Posts { get; set; }
         public List<ActionViewModel> Votes { get; set; }
+        public GetAccountVotesViewModel UpvoteAccountVotes { get; set; }
 
         public ValidationSummaryViewModel ValidationSummary { get; set; }
 

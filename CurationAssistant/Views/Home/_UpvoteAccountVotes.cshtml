@@ -1,0 +1,34 @@
+﻿<div class="posts">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="row" class="w-25">Date</th>
+                <th scope="row" class="w-25 text-right">Percentage</th>
+                <th scope="row" class="w-50">Title</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: { data: UpvoteAccountVotes.LastVotes, as: 'post' }">
+            <tr>
+                <td>
+                    <span data-bind="html: post.createDate()"></span>
+                    <i class="fas fa-info-circle" data-bind="visible: $parent.UpvoteAccountVotes.MostRecentUpvote.permlink() != post.permlink(), tooltip: { title: 'Post creation date', trigger: 'hover' }"></i>
+                    <i class="fas fa-info-circle" data-bind="visible: $parent.UpvoteAccountVotes.MostRecentUpvote.permlink() == post.permlink(), tooltip: { title: 'Actual vote date', trigger: 'hover' }"></i>
+                    <br />
+                    <span class="small" data-bind="html: post.createDateDiff()"></span>
+                </td>
+                <td>
+                    <div class="row">
+                        <div class="col-sm-12 text-right">
+                            <span data-bind="text: (post.vote_percent() / 100) + '%'"></span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <a data-bind="attr: { href: post.postLinkComputed() }" target="_blank">
+                        <span data-bind="text: post.postLinkComputed()"></span>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

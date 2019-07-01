@@ -1,4 +1,25 @@
-﻿var viewModel = new CurationDetailsViewModel();
+﻿
+ko.bindingHandlers.tooltip = {
+    init: function (element, valueAccessor) {
+        var local = ko.utils.unwrapObservable(valueAccessor()),
+            options = {};
+
+        ko.utils.extend(options, ko.bindingHandlers.tooltip.options);
+        ko.utils.extend(options, local);
+
+        $(element).tooltip(options);
+
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+            $(element).tooltip("destroy");
+        });
+    },
+    options: {
+        placement: "right",
+        trigger: "click"
+    }
+};
+
+var viewModel = new CurationDetailsViewModel();
 
 function CurationDetailsViewModel(data) {
     var self = this;
@@ -31,6 +52,11 @@ function CurationDetailsViewModel(data) {
         'Votes': {
             create: function (options) {
                 return new ActionViewModel(options.data, self);
+            }
+        },
+        'UpvoteAccountVotes': {
+            create: function (options) {
+                return new GetAccountVotesViewModel(options.data, self);
             }
         },
         'ValidationSummary': {
@@ -262,6 +288,46 @@ function DiscussionListViewModel(data, parent) {
     });
 }
 
+function GetAccountVotesViewModel(data, parent) {
+    var self = this;
+    self.parent = parent;
+    self.LastVotes = ko.observableArray();
+
+    var mapping = {
+        'LastVotes': {
+            create: function (options) {
+                return new FindVotesItemViewModel(options.data, self);
+            }
+        }
+    };
+
+    if (data != null)
+        ko.mapping.fromJS(data, mapping, self);
+}
+
+
+function FindVotesItemViewModel(data, parent) {
+    var self = this;
+    self.parent = parent;
+
+    if (data != null)
+        ko.mapping.fromJS(data, null, self);
+
+    self.createDate = ko.computed(function () {
+        return getJsDate(self.last_update());
+    });
+
+    self.createDateDiff = ko.computed(function () {
+        return getJsDateDiff(self.last_update());
+    });
+
+    self.postLinkComputed = ko.computed(function () {
+        var postLink = parent.parent.BaseUrl() + '/' + '@' + self.author() + '/' + self.permlink();
+
+        return postLink;
+    });
+}
+
 $("#validateForm").submit(function (e) {
     e.preventDefault(); // avoid to execute the actual submit of the form.
     $("body").loading();
@@ -275,7 +341,7 @@ $("#validateForm").submit(function (e) {
         data: form.serialize(), // serializes the form's elements.
         success: function (result) {
             $("body").loading('stop');
-            
+            console.log(result);
             if ($("#initialized").val() == 1) {
                 viewModel.refreshData(result);
             } else {

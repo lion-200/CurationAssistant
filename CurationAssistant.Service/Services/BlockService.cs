@@ -21,6 +21,25 @@ namespace CurationAssistant.Service.Services
             _mapper = mapper;
         }
 
+        public BlockDTO GetBlockByNum(int num)
+        {
+            BlockDTO response = null;
+
+            try
+            {
+                var entity = _hiveContext.Blocks.Where(x => x.num == num).FirstOrDefault();
+
+                response = AutoMapper.Mapper.Map<BlockDTO>(entity);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+            return response;
+        }
+
         public BlockDTO GetMostRecentBlock()
         {
             BlockDTO block = new BlockDTO();

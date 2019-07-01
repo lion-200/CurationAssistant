@@ -204,7 +204,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
-    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -222,6 +221,8 @@
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\OperationCommentViewModel.cs" />
     <Compile Include="Models\OperationVoteViewModel.cs" />
+    <Compile Include="Models\SteemModels\FindVotesItemModel.cs" />
+    <Compile Include="Models\SteemModels\FindVotesModel.cs" />
     <Compile Include="Models\SteemModels\GetAccountsModel.cs" />
     <Compile Include="Models\SteemModels\GetDiscussionModel.cs" />
     <Compile Include="Models\SteemModels\GetDynamicGlobalPropertiesModel.cs" />
@@ -328,6 +329,7 @@
     <Content Include="Views\Home\_PostDetails.cshtml" />
     <Content Include="Views\Home\_ValidationSummary.cshtml" />
     <Content Include="Views\Home\_ValidationVariables.cshtml" />
+    <Content Include="Views\Home\_UpvoteAccountVotes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

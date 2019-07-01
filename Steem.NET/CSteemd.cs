@@ -347,6 +347,21 @@ namespace SteemAPI.CS
             arrParams.Add(only_virtual);
             return call_api_array(MethodBase.GetCurrentMethod().Name, arrParams);
         }
+
+        public JObject find_votes(string author, string permlink, string api = "database_api")
+        {
+            var dictParams = new Dictionary<string, object>
+            {
+                { "author", author },
+                { "permlink", permlink }
+            };
+
+            string method = MethodBase.GetCurrentMethod().Name;
+            if (!String.IsNullOrEmpty(api))
+                method = string.Format("{0}.{1}", api, method); 
+
+            return call_api(method, new ArrayList { dictParams }, true);
+        }
         #endregion
     }
 }

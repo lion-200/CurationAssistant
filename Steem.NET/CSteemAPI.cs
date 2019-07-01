@@ -56,11 +56,11 @@ namespace SteemAPI.CS
 		#endregion
 
 		#region Private methods
-		private string SendRequest(string strMethod, ArrayList strParams = null)
+		private string SendRequest(string strMethod, ArrayList strParams = null, bool postDictionaryAsString = false)
 		{            
 		    if ( m_eType == EType.RPC)
 			{
-				return m_oJson.SendRequest(strMethod, strParams);
+				return m_oJson.SendRequest(strMethod, strParams, postDictionaryAsString);
 			}
 			else
 			{
@@ -79,9 +79,9 @@ namespace SteemAPI.CS
 			return (JObject)JsonConvert.DeserializeObject<Dictionary<string, JToken>>(SendRequest(strMethod))["result"];
 		}
 
-		protected JObject call_api(string strMethod, ArrayList arrParams)
+		protected JObject call_api(string strMethod, ArrayList arrParams, bool postDictionaryAsString = false)
 		{ 
-			return (JObject)JsonConvert.DeserializeObject<Dictionary<string, JToken>>(SendRequest(strMethod, arrParams))["result"];
+			return (JObject)JsonConvert.DeserializeObject<Dictionary<string, JToken>>(SendRequest(strMethod, arrParams, postDictionaryAsString))["result"];
 		}
 
 		protected JArray call_api_array(string strMethod, ArrayList arrParams)

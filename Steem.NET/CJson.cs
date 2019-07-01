@@ -8,6 +8,7 @@ using System.Collections;
 using log4net;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace SteemAPI.CS
 {
@@ -150,7 +151,7 @@ namespace SteemAPI.CS
 		#endregion
 
 		#region public methods
-	    public string SendRequest(string strMethod, ArrayList strParams = null)
+	    public string SendRequest(string strMethod, ArrayList strParams = null, bool postDictionaryAsString = false)
 		{
 			int nRetry = 0;
 			string strResult = string.Empty;
@@ -162,8 +163,20 @@ namespace SteemAPI.CS
 			arrRequest["method"] = strMethod;
             if (strParams != null)
 			{
-                arrRequest["params"] = strParams;
-			}
+                if(strParams.Count == 1 && postDictionaryAsString)
+                {
+                    Type t = strParams[0].GetType();
+                    if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                        arrRequest["params"] = strParams[0];
+                    else
+                        arrRequest["params"] = strParams;
+                }                    
+                else
+                {
+                    arrRequest["params"] = strParams;
+                }
+                    
+            }
 
 			string strJson = JsonConvert.SerializeObject(arrRequest);
 			for(nRetry = 1; nRetry < 2; nRetry++)

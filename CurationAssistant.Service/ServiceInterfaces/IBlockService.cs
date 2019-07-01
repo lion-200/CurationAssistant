@@ -10,5 +10,6 @@ namespace CurationAssistant.Service.ServiceInterfaces
     public interface IBlockService
     {
         BlockDTO GetMostRecentBlock();
+        BlockDTO GetBlockByNum(int num);
     }
 }

@@ -19,18 +19,16 @@ namespace CurationAssistant.Controllers
 {
     public class HomeController : Controller
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(HomeController));
-        private readonly IBlockService _blockService;        
+        private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(HomeController));
+        private readonly IPostService _postService;
 
-        public HomeController(IBlockService blockService)
-        {            
-            _blockService = blockService;
+        public HomeController(IPostService postService)
+        {
+            _postService = postService;
         }
 
         public ActionResult Index()
         {
-            var block = _blockService.GetMostRecentBlock();
-
             var model = new HomeViewModel();
 
             return View(model);
@@ -59,13 +57,12 @@ namespace CurationAssistant.Controllers
 
                 var upvoteAccountDetails = GetAccountDetails(vars.UpvoteAccount.Replace("@", ""));
                 validationItems.Add(ValidationHelper.ValidateUpvoteAccountMinVPRule(upvoteAccountDetails, vars));
-
-                var upvoteAccountVoteModel = GetLastUpvoteFromUpvoteAccountToAuthor(vars.UpvoteAccount, model.Author.Details.name, 2000);
-                validationItems.Add(ValidationHelper.ValidateMinDaysSinceLastUpvoteFromUpvoteAccount(model.Author.Details.name, upvoteAccountVoteModel, vars));
+                                
+                validationItems.Add(ValidationHelper.ValidateMinDaysSinceLastUpvoteFromUpvoteAccount(model.Author.Details.name, model.UpvoteAccountVotes, vars));
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                _log.Error(ex);
             }
 
             result.Items = validationItems;
@@ -73,85 +70,75 @@ namespace CurationAssistant.Controllers
             return result;
         }
 
-        private GetAccountVotesViewModel GetLastUpvoteFromUpvoteAccountToAuthor(string voter, string author, int voteLimit)
+        /// <summary>
+        /// This method gets the x most recent upvotes from the filled Upvote account to the author of the given post
+        /// </summary>
+        /// <param name="author">The author of the post</param>
+        /// <param name="vars">Validation variables incl. upvote account name and various other variables to validate the post against</param>
+        /// <returns>Returns the most recent upvotes and the one matching given minimum percentage criteria</returns>
+        private GetAccountVotesViewModel GetLastUpvotesFromUpvoteAccountToAuthor(string author, ValidationVariables vars)
         {
             var model = new GetAccountVotesViewModel();
-            
-            uint batchSize = 1000;
-            var start = -1;
+            model.MinPercentage = vars.MinPercentageUpvoteFromUpvoteAccount;
 
-            var limit = Convert.ToInt32(ConfigurationHelper.VoteHistoryTransactionLimit);
-            int transactionsRetrieved = 0;
-            int voteCount = 0;
-            log.Info(string.Format("Votes.Batchsize: {0}", batchSize));
+            // get top x most recent posts containing the upvote
+            var posts = _postService.GetMostRecentPostsContainingVoter(author, vars.UpvoteAccount, ConfigurationHelper.RetrieveUpvoteAccountVoteCount);
 
-            using (var csteemd = new CSteemd(ConfigurationHelper.HostName))
-            {                
-                // stop if the max amount of transactions are reached!
-                while (transactionsRetrieved < limit)
+            if(posts != null && posts.Any())
+            {
+                // map results to our FindVotesItemModel
+                foreach(var p in posts)
                 {
-                    log.Info(string.Format("Votes.TransactionsReceived: {0}", transactionsRetrieved));
-                    log.Info(string.Format("Votes.Votecount: {0}", voteCount));
+                    var pm = DiscussionMapper.ToFindVotesItemModel(p, vars.UpvoteAccount);
+                    model.LastVotes.Add(pm);
+                }
 
-                    var responseHistory = csteemd.get_account_history(voter, start, batchSize);
-
-                    // store last transaction datetime, so that we know until what data time value we got the transactions
-                    model.LastTransactionDate = responseHistory[0][1]["timestamp"].ToObject<DateTime>();
-
-                    var totalCount = responseHistory.Count();
-                    // get_account_history returns last result first, but we want most recent first, so we start from the last element of the response to loop
-                    for (var i = totalCount - 1; i >= 0; i--)
-                    {
-                        var el = responseHistory[i];
-
-                        // get the index of the last transaction in the list to make the next call start from this index
-                        if (transactionsRetrieved == 0)
-                        {
-                            var firstIndex = el[0].ToString();
-                            Int32.TryParse(firstIndex, out start);
-                        }
-
-                        var transaction = el[1].ToObject<TransactionModel>();
-
-                        var operation = el[1]["op"];
-                        var operationType = operation[0].ToString();
-
-                        var actionViewModel = new ActionViewModel();
-                        actionViewModel.TimeStamp = el[1]["timestamp"].ToObject<DateTime>();
-                        if (operationType == "vote" && voteCount < voteLimit)
-                        {
-                            var operationModel = operation[1].ToObject<OperationVoteViewModel>();
-
-                            if (operationModel.voter == voter)
-                            {
-                                actionViewModel.Type = "vote";
-                                actionViewModel.Details = operationModel;
-
-                                if(operationModel.author == author)
-                                {
-                                    model.LastVote = actionViewModel;
-                                    break;
-                                }
-
-                                voteCount++;
-                            }
-                        }
-
-                        // if the required amount of counts are reached, stop
-                        if (voteCount == voteLimit)
-                        {
-                            break;
-                        }
-                    }
-
-                    transactionsRetrieved += (int)batchSize;
-                    start -= (int)batchSize;
+                // get timestamp details of most recent highest upvote
+                // this is not stored in hivemind, so we need to make a call to Steem API
+                if (model.MostRecentUpvote != null) 
+                {
+                    // get vote details from Steem API's because hivemind doesn't contain detailed vote data
+                    var lastUpdate = GetVoteDateOfMostRecentUpvote(author, model.MostRecentUpvote.permlink, vars.UpvoteAccount);
+                    if (lastUpdate.HasValue)
+                        model.MostRecentUpvote.last_update = lastUpdate.Value;
                 }
             }
 
-            model.VotesAnalyzed = voteCount;
-
             return model;
+        }
+
+        /// <summary>
+        /// Gets the vote details of given permlink to determine vote creation date
+        /// </summary>
+        /// <param name="author">The author of the post</param>
+        /// <param name="permlink">The permlink of the post</param>
+        /// <param name="upvoteAccount">The account name of the voter</param>
+        /// <returns></returns>
+        private DateTime? GetVoteDateOfMostRecentUpvote(string author, string permlink, string upvoteAccount)
+        {
+            DateTime? voteDate = null;
+
+            using (var csteemd = new CSteemd(ConfigurationHelper.HostName))
+            {
+                var response = csteemd.find_votes(author, permlink);
+
+                if (response != null)
+                {
+                    var findVotesModel = new FindVotesModel();
+                    foreach (var item in response["votes"])
+                    {
+                        findVotesModel.Items.Add(item.ToObject<FindVotesItemModel>());
+                    }
+
+                    var upvoteModel = findVotesModel.Items.FirstOrDefault(x => x.voter == upvoteAccount);
+                    if (upvoteModel != null)
+                    {
+                        voteDate = upvoteModel.last_update;
+                    }
+                }
+            }
+
+            return voteDate;
         }
 
         /// <summary>
@@ -182,6 +169,9 @@ namespace CurationAssistant.Controllers
                 // get_discussion
                 result.BlogPost = GetBlogPost(accountName, permlink);
 
+                // get upvote account votes for author
+                result.UpvoteAccountVotes = GetLastUpvotesFromUpvoteAccountToAuthor(accountName, model.ValidationVariables);
+
                 if (result.BlogPost != null)
                 {
                     // validate data
@@ -193,7 +183,7 @@ namespace CurationAssistant.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                _log.Error(ex);
             }
 
             return Json(result);
@@ -218,7 +208,7 @@ namespace CurationAssistant.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                _log.Error(ex);
             }
 
             return author;
@@ -249,7 +239,7 @@ namespace CurationAssistant.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                _log.Error(ex);
             }
 
             return model;
@@ -282,7 +272,7 @@ namespace CurationAssistant.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                _log.Error(ex);
             }
 
             return account;
@@ -314,20 +304,20 @@ namespace CurationAssistant.Controllers
                 var start = -1;
 
                 int transactionsRetrieved = 0;
-                log.Info(string.Format("Batchsize: {0}", batchSize));
+                _log.Info(string.Format("Batchsize: {0}", batchSize));
 
                 using (var csteemd = new CSteemd(ConfigurationHelper.HostName))
                 {
                     // stop if the max amount of transactions are reached!
                     while (transactionsRetrieved < limit)
                     {
-                        log.Info(string.Format("Retrieving next batch...Retrieved transaction count: {0}. Value start: {1}", transactionsRetrieved, start));
+                        _log.Info(string.Format("Retrieving next batch...Retrieved transaction count: {0}. Value start: {1}", transactionsRetrieved, start));
 
                         var responseHistory = csteemd.get_account_history(accountName, start, batchSize);                        
 
                         // store last transaction datetime, so that we know until what data time value we got the transactions
                         result.LastTransactionDate = responseHistory[0][1]["timestamp"].ToObject<DateTime>();
-                        log.Info(string.Format("Stored last transaction datetime: {0}", result.LastTransactionDate.ToString("dd-MM-yyyy HH:mm")));
+                        _log.Info(string.Format("Stored last transaction datetime: {0}", result.LastTransactionDate.ToString("dd-MM-yyyy HH:mm")));
                                                 
                         var totalCount = responseHistory.Count();
                         // get_account_history returns last result first, but we want most recent first, so we start from the last element of the response to loop
@@ -391,7 +381,7 @@ namespace CurationAssistant.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                _log.Error(ex);
             }
         }
 
@@ -426,7 +416,7 @@ namespace CurationAssistant.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                _log.Error(ex);
             }
 
             return posts;
@@ -460,7 +450,7 @@ namespace CurationAssistant.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                _log.Error(ex);
             }
 
 
@@ -490,7 +480,7 @@ namespace CurationAssistant.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                _log.Error(ex);
             }
 
             return blogPost;
