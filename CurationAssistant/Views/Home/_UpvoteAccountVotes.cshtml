@@ -11,8 +11,13 @@
             <tr>
                 <td>
                     <span data-bind="html: post.createDate()"></span>
+                    <!-- ko if: $parent.UpvoteAccountVotes.MostRecentUpvote != null -->
                     <i class="fas fa-info-circle" data-bind="visible: $parent.UpvoteAccountVotes.MostRecentUpvote.permlink() != post.permlink(), tooltip: { title: 'Post creation date', trigger: 'hover' }"></i>
                     <i class="fas fa-info-circle" data-bind="visible: $parent.UpvoteAccountVotes.MostRecentUpvote.permlink() == post.permlink(), tooltip: { title: 'Actual vote date', trigger: 'hover' }"></i>
+                    <!-- /ko -->
+                    <!-- ko if: $parent.UpvoteAccountVotes.MostRecentUpvote == null -->
+                    <i class="fas fa-info-circle" data-bind="tooltip: { title: 'Post creation date', trigger: 'hover' }"></i>
+                    <!-- /ko -->
                     <br />
                     <span class="small" data-bind="html: post.createDateDiff()"></span>
                 </td>
