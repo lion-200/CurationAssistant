@@ -10,7 +10,7 @@ ko.bindingHandlers.tooltip = {
         $(element).tooltip(options);
 
         ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
-            $(element).tooltip("destroy");
+            $(element).tooltip("dispose");
         });
     },
     options: {
