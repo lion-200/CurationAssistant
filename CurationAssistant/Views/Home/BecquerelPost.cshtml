@@ -1,0 +1,10 @@
+﻿@{ 
+    Layout = null;
+}
+
+@*@model CurationAssistant.Models.BqResponseModel*@
+@model CurationAssistant.Models.SteemModels.GetDiscussionModel
+
+    <script type="application/json" data-iso-key="_0">
+        @Html.Raw(Json.Encode(Model))
+    </script>

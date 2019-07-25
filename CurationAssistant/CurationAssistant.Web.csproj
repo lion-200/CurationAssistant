@@ -214,7 +214,9 @@
     <Compile Include="Mappers\DiscussionMapper.cs" />
     <Compile Include="Models\ActionViewModel.cs" />
     <Compile Include="Models\AuthorViewModel.cs" />
+    <Compile Include="Models\Becquerel\BqPostModel.cs" />
     <Compile Include="Models\BlogPostViewModel.cs" />
+    <Compile Include="Models\Becquerel\BqResponseModel.cs" />
     <Compile Include="Models\CurationDetailsViewModel.cs" />
     <Compile Include="Models\Enums\ValidationPriority.cs" />
     <Compile Include="Models\Enums\ValidationResultType.cs" />
@@ -330,6 +332,7 @@
     <Content Include="Views\Home\_ValidationSummary.cshtml" />
     <Content Include="Views\Home\_ValidationVariables.cshtml" />
     <Content Include="Views\Home\_UpvoteAccountVotes.cshtml" />
+    <Content Include="Views\Home\BecquerelPost.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -2,6 +2,7 @@
 using CurationAssistant.Helpers;
 using CurationAssistant.Mappers;
 using CurationAssistant.Models;
+using CurationAssistant.Models.Becquerel;
 using CurationAssistant.Models.SteemModels;
 using CurationAssistant.Models.SteemModels.Partials;
 using CurationAssistant.Models.TransactionHistory;
@@ -475,6 +476,65 @@ namespace CurationAssistant.Controllers
                     if (response != null)
                     {
                         blogPost = response.ToObject<GetDiscussionModel>();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+            }
+
+            return blogPost;
+        }
+
+        public ActionResult BecquerelPost(string url)
+        {
+            // split link into parts to get account name
+            url = url.Replace(".json", "");
+            var linkItems = url.Split('/');
+            var accountName = linkItems.FirstOrDefault(x => x.Contains("@"));
+            var permlink = linkItems.LastOrDefault();
+
+            accountName = accountName.Replace("@", "");
+
+            // get_discussion
+            var response = new BqResponseModel();
+            response.post = GetBqPost(accountName, permlink);
+            if (response.post != null)
+            {
+                if (response.post.id > 0)
+                {
+                    response.status = 200;
+                }
+                else
+                {
+                    response.post = null;
+                    response.status = 404;
+                }
+            }
+            else
+            {
+                response.status = 404;
+            }
+
+            return new JsonResult { Data = response, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
+        private BqPostModel GetBqPost(string accountName, string permlink)
+        {
+            var blogPost = new BqPostModel();
+
+            try
+            {
+                using (var csteemd = new CSteemd(ConfigurationHelper.HostName))
+                {
+                    var response = csteemd.get_discussion(accountName, permlink);
+                    if (response != null)
+                    {
+                        var discModel = response.ToObject<GetDiscussionModel>();
+                        blogPost = response.ToObject<BqPostModel>();
+                        blogPost.id = discModel.post_id;
+                        blogPost.created = discModel.created.ToString("yyyy-MM-dd HH:mm:ss");
                     }
                 }
             }

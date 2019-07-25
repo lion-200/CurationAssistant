@@ -1,4 +1,12 @@
 Version: draft
+Date: 25-07-2019
+----------------
+- Helper method added for Curie curators to submit their posts to becquerel website.
+- BecquerelPost models created
+- New route configuration added to support routing without requiring the controller name in url
+
+
+Version: draft
 Date: 01-07-2019
 ----------------
 - Popper.js reference added to BundleConfig for tooltip display
